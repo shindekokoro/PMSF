@@ -905,6 +905,16 @@ var StoreOptions = {
             default: notifyNotification,
             type: StoreTypes.Boolean
         },
+    'remember_quests_exclude_pokemon':
+        {
+            default: hideQuestsPokemon,
+            type: StoreTypes.JSON
+        },
+    'remember_quests_exclude_item':
+        {
+            default: hideQuestsItem,
+            type: StoreTypes.JSON
+        },
     'showRaids':
         {
             default: enableRaids,
@@ -943,6 +953,11 @@ var StoreOptions = {
     'showPortals':
         {
             default: enablePortals,
+            type: StoreTypes.Boolean
+        },
+    'showPoi':
+        {
+            default: enablePoi,
             type: StoreTypes.Boolean
         },
     'showNewPortalsOnly':
@@ -1020,9 +1035,19 @@ var StoreOptions = {
             default: enablePokestops,
             type: StoreTypes.Boolean
         },
-    'showLuredPokestopsOnly':
+    'showLures':
         {
             default: enableLured,
+            type: StoreTypes.Boolean
+        },
+    'showQuests':
+        {
+            default: enableQuests,
+            type: StoreTypes.Boolean
+        },
+    'showDustAmount':
+        {
+            default: 500,
             type: StoreTypes.Number
         },
     'showWeather':
@@ -1043,6 +1068,11 @@ var StoreOptions = {
     'showRanges':
         {
             default: enableRanges,
+            type: StoreTypes.Boolean
+        },
+    'showScanPolygon':
+        {
+            default: enableScanPolygon,
             type: StoreTypes.Boolean
         },
     'playSound':
@@ -1193,7 +1223,8 @@ var mapData = {
     spawnpoints: {},
     nests: {},
     communities: {},
-    portals: {}
+    portals: {},
+    pois: {}
 }
 
 function getPokemonSprite(index, sprite, displayHeight, weather = 0, encounterForm = 0) {

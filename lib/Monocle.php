@@ -141,7 +141,7 @@ class Monocle extends Scanner
             $pokemon["pokemon_name"] = i8ln($this->data[$pokemon["pokemon_id"]]['name']);
             $pokemon["pokemon_rarity"] = i8ln($this->data[$pokemon["pokemon_id"]]['rarity']);
 
-            if (isset($pokemon["form"])) {
+            if (isset($pokemon["form"]) && $pokemon["form"] > 0) {
                 $forms = $this->data[$pokemon["pokemon_id"]]["forms"];
                 foreach ($forms as $f => $v) {
                     if ($pokemon["form"] === $v['protoform']) {
@@ -173,7 +173,7 @@ class Monocle extends Scanner
         return $data;
     }
 
-    public function get_stops($swLat, $swLng, $neLat, $neLng, $tstamp = 0, $oSwLat = 0, $oSwLng = 0, $oNeLat = 0, $oNeLng = 0, $lured = false)
+    public function get_stops($qpeids, $qieids, $swLat, $swLng, $neLat, $neLng, $tstamp = 0, $oSwLat = 0, $oSwLng = 0, $oNeLat = 0, $oNeLng = 0, $lures, $quests, $dustamount)
     {
         $conds = array();
         $params = array();

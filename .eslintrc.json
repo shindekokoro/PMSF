@@ -155,6 +155,16 @@
     "iconpath": true,
     "noRarityDisplay": true,
     "noWeatherIcons": true,
-    "noWeatherShadow": true
+    "noWeatherShadow": true,
+    "hideQuestsPokemon": true,
+    "hideQuestsItem": true,
+    "noQuests": true,
+    "enableQuests": true,
+    "enableScanPolygon": true,
+    "turf": true,
+    "geoJSONfile": true,
+    "enablePoi": true,
+    "noDeletePoi": true,
+    "noMarkPoi": true
   }
 }

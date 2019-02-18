@@ -38,7 +38,6 @@ config/*
 cron/*
 !cron/example.PMSF
 !cron/nest_cron.php
-!cron/quest_cron.php
 !cron/raid_cron.php
 !cron/silph.php
 /static/dist/
@@ -51,6 +50,6 @@ package-lock.json
 index.php
 .DS_Store
 static/.DS_Store
-vendor/*^M
+vendor/*
 composer.lock
 custom/*

@@ -1176,8 +1176,13 @@ function gymLabel(item) {
                 '<a href="whatsapp://send?text=' + encodeURIComponent(item.name) + '%0ALevel%20' + item.raid_level + '%20egg%0A%2AStart:%20' + raidStartStr + '%2A%0A%2AEnd:%20' + raidEndStr + '%2A%0ADirections:%0Ahttps://www.google.com/maps/search/?api=1%26query=' + item.latitude + ',' + item.longitude + '" data-action="share/whatsapp/share">Whatsapp Link</a>' +
                 '</div>' +
                 '</center>'
+        } else {
+          str += '<div>' +
+              'Send Raid to Discord' +
+              '</div>'
         }
     }
+
 
     return str
 }

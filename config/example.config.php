@@ -74,6 +74,10 @@ $worldopoleUrl = "";                                                // Link to W
 /* StatsToggle */
 $noStatsToggle = false;                                             // Enables or disables the stats button in the header.
 
+/* PokeBot */
+$pokebotApiUrl = "";                                                // Link to pokebot API, leave "" for empty
+
+
 /* MOTD */
 $noMotd = true;
 $motdTitle = "Message of the Day";
@@ -324,7 +328,7 @@ $enableLevel13Cells = 'false';
 $enableLevel14Cells = 'false';
 $enableLevel17Cells = 'false';
 $markPortalsAsNew = 86400;                         // Time in seconds to mark new imported portals as new ( 86400 for 1 day )
-$noPoi = true;					   // Allow users to view POI markers 
+$noPoi = true;					   // Allow users to view POI markers
 $noAddPoi = true;				   // Allow to add POI markers (locations eligible for submitting Pokestops/Ingress portals)
 $enablePoi = 'false';
 $noDeletePoi = true;
@@ -447,7 +451,7 @@ $fork = "default";                                                  // {default/
 $queryInterval = '5000';                                            // Interval between raw_data requests. Try to lower to increase performance.
 
 $db = new Medoo([// required
-    'database_type' => 'mysql',                                    
+    'database_type' => 'mysql',
     'database_name' => 'Monocle',
     'server' => '127.0.0.1',
     'username' => 'database_user',
@@ -471,6 +475,18 @@ $db = new Medoo([// required
     //'port' => 5432,                                               // Comment out if not needed, just add // in front!
     //'socket' => /path/to/socket/,
 //]);
+
+// $pokebotDb = new Medoo([                                               // enables novabot raid-management integration
+// 	'database_type' => 'mysql',                                     // mysql/mariadb/pgsql/sybase/oracle/mssql/sqlite
+// 	'database_name' => 'pokebo',
+// 	'server' => '127.0.0.1',
+// 	'username' => 'database_user',
+// 	'password' => 'database_password',
+// 	'charset' => 'utf8mb4',
+// 	// [optional]
+// 	//'port' => 5432,                                               // Comment out if not needed, just add // in front!
+// 	//'socket' => /path/to/socket/,
+// ]);
 
 if(file_exists('config/access-config.php'))
     include 'config/access-config.php';

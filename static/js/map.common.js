@@ -1189,7 +1189,12 @@ var StoreOptions = {
         {
             default: exEligible,
             type: StoreTypes.Boolean
-        },
+          },
+    'pokebotLobbies':
+          {
+            default: enableRaidLobbies,
+            type: StoreTypes.Boolean
+          },
     'showRaidTimer':
         {
             default: enableRaidTimer,

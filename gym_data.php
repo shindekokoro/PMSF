@@ -25,6 +25,14 @@ if (strtolower($map) === "monocle") {
     }
 }
 
+// init pokebotdb
+global $pokebotDb;
+if ($pokebotDb !== false) {
+	$pokebotScanner = new \NovaBot\NovaBot();
+} else {
+	$pokebotScanner = false;
+}
+
 if (empty($_POST['id'])) {
     http_response_code(400);
     die();
@@ -37,7 +45,19 @@ if (!validateToken($_POST['token'])) {
 
 $id = $_POST['id'];
 
-$p = $scanner->get_gym($id);
+$gyms = array($scanner->get_gym($id));
+if ($novabotScanner !== false) {
+    $novabotScanner->addLobbies($gyms);
+}
+$p = $gyms[0];
+
+if ($novabotScanner !== false) {
+    if (!is_null($p['gym_id'])) {
+        $p['lobby'] = $novabotScanner->getLobbyInfo($p['gym_id']);
+    } else {
+        $p['lobby'] = null;
+    }
+}
 
 $p['token'] = refreshCsrfToken();
 

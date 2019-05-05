@@ -30,6 +30,7 @@ $libs[] = "submit/Submit.rdm.php";
 $libs[] = "submit/Submit.monocle_pmsf.php";
 $libs[] = "submit/Submit.monocle_mad.php";
 $libs[] = "Manual.php";
+$libs[] = "Pokebot.php";
 
 // Include libraries
 foreach ($libs as $file) {
@@ -50,7 +51,7 @@ $startingLng = 5.302366;                                        // Starting long
 
 $maxLatLng = 1;                                                     // Max latitude and longitude size (1 = ~110km, 0 to disable)
 $maxZoomOut = 0;                                                    // Max zoom out level (11 ~= $maxLatLng = 1, 0 to disable, lower = the further you can zoom out)
-$maxZoomIn = 18;                                                    // Max zoom in level 18 
+$maxZoomIn = 18;                                                    // Max zoom in level 18
 $disableClusteringAtZoom = 15;					    // Disable clustering above this value. 0 to disable
 $zoomToBoundsOnClick = 15;					    // Zoomlevel on clusterClick
 $maxClusterRadius = 30;						    // The maximum radius that a cluster will cover from the central marker (in pixels).

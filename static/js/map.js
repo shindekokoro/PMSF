@@ -171,6 +171,11 @@ var stopLayerGroup = new L.LayerGroup()
 var scanAreaGroup = new L.LayerGroup()
 var scanAreas = []
 var nestLayerGroup = new L.LayerGroup()
+
+var selectedGymSidebar = null
+
+var pokebotApiUrl
+
 /*
  text place holders:
  <pkm> - pokemon name
@@ -995,6 +1000,15 @@ function gymLabel(item) {
         var raidEndStr = getTimeStr(item['raid_end'])
         raidStr += '<div>' + i8ln('Start') + ': <b>' + raidStartStr + '</b> <span class="label-countdown" disappears-at="' + item['raid_start'] + '" start>(00m00s)</span></div>'
         raidStr += '<div>' + i8ln('End') + ': <b>' + raidEndStr + '</b> <span class="label-countdown" disappears-at="' + item['raid_end'] + '" end>(00m00s)</span></div>'
+        if (typeof item.count !== 'undefined' && item.count > 0) {
+            var playersText
+            if (item.count == 1) {
+              playersText = i8ln('Player')
+            } else {
+	            playersText = i8ln('Players')
+            }
+		    raidStr += '<div><b>' + i8ln('Lobby') + ': ' + item.count + ' ' + playersText + '</b></div>'
+	    }
 
         var raidForm = item['form']
         var formStr = ''
@@ -1126,10 +1140,6 @@ function gymLabel(item) {
                 '<a href="whatsapp://send?text=' + encodeURIComponent(item.name) + '%0ALevel%20' + item.raid_level + '%20egg%0A%2AStart:%20' + raidStartStr + '%2A%0A%2AEnd:%20' + raidEndStr + '%2A%0ADirections:%0Ahttps://www.google.com/maps/search/?api=1%26query=' + item.latitude + ',' + item.longitude + '" data-action="share/whatsapp/share">Whatsapp Link</a>' +
                 '</div>' +
                 '</center>'
-        } else {
-          str += '<div>' +
-              'Send Raid to Discord' +
-              '</div>'
         }
     } else {
         var freeSlots = item['slots_available']
@@ -1180,10 +1190,6 @@ function gymLabel(item) {
                 '<a href="whatsapp://send?text=' + encodeURIComponent(item.name) + '%0ALevel%20' + item.raid_level + '%20egg%0A%2AStart:%20' + raidStartStr + '%2A%0A%2AEnd:%20' + raidEndStr + '%2A%0ADirections:%0Ahttps://www.google.com/maps/search/?api=1%26query=' + item.latitude + ',' + item.longitude + '" data-action="share/whatsapp/share">Whatsapp Link</a>' +
                 '</div>' +
                 '</center>'
-        } else {
-          str += '<div>' +
-              'Send Raid to Discord' +
-              '</div>'
         }
     }
 
@@ -1681,6 +1687,7 @@ function getGymMarkerIcon(item) {
     }
     var team = item.team_id
     var teamStr = ''
+    var lobbyCount = item['count']
     if (team === 0 || level === null) {
         teamStr = gymTypes[item['team_id']]
     } else {
@@ -1695,11 +1702,16 @@ function getGymMarkerIcon(item) {
     if ((((park !== '0' && park !== 'None' && park !== undefined && onlyTriggerGyms === false && park) || (item['sponsor'] !== undefined && item['sponsor'] > 0) || triggerGyms.includes(item['gym_id'])) && (noExGyms === false))) {
         smallExIcon = '<img src="static/images/ex.png" style="width:26px;position:absolute;right:35px;bottom:13px;"/>'
     }
+    var lobbyIcon = ''
+    if (lobbyCount > 0) {
+      lobbyIcon = '<img src="static/images/lobby.png" style="position:absolute;left:25px;bottom:2px;"/>'
+    }
     var html = ''
     if (item['raid_pokemon_id'] != null && item.raid_end > Date.now()) {
         html = '<div style="position:relative;">' +
             '<img src="static/forts/' + Store.get('gymMarkerStyle') + '/' + teamStr + '.png" style="width:50px;height:auto;"/>' +
             exIcon +
+               lobbyIcon +
             '<img src="' + iconpath + 'pokemon_icon_' + pokemonidStr + '_' + formStr + '.png" style="width:50px;height:auto;position:absolute;top:-15px;right:0px;"/>' +
             '</div>'
         if (noRaidTimer === false && Store.get(['showRaidTimer'])) {
@@ -1724,6 +1736,7 @@ function getGymMarkerIcon(item) {
         html = '<div style="position:relative;">' +
             '<img src="static/forts/' + Store.get('gymMarkerStyle') + '/' + teamStr + '.png" style="width:50px;height:auto;"/>' +
             exIcon +
+               lobbyIcon +
             '<img src="static/raids/egg_' + hatchedEgg + '.png" style="width:35px;height:auto;position:absolute;top:-11px;right:18px;"/>' +
             '</div>'
         if (noRaidTimer === false && Store.get(['showRaidTimer'])) {
@@ -1748,6 +1761,7 @@ function getGymMarkerIcon(item) {
         html = '<div style="position:relative;">' +
             '<img src="static/forts/' + Store.get('gymMarkerStyle') + '/' + teamStr + '.png" style="width:50px;height:auto;"/>' +
             exIcon +
+               lobbyIcon +
             '<img src="static/raids/egg_' + raidEgg + '.png" style="width:25px;height:auto;position:absolute;top:6px;right:18px;"/>' +
             '</div>'
         if (noRaidTimer === false && Store.get(['showRaidTimer'])) {
@@ -1764,6 +1778,7 @@ function getGymMarkerIcon(item) {
         html = '<div>' +
             '<img src="static/forts/' + Store.get('gymMarkerStyle') + '/' + teamStr + '.png" style="width:35px;height:auto;"/>' +
             smallExIcon +
+               lobbyIcon +
             '</div>'
         fortMarker = L.divIcon({
             iconSize: [50, 50],
@@ -1846,6 +1861,7 @@ function setupGymMarker(item) {
             var gymSidebar = document.querySelector('#gym-details')
             if (gymSidebar.getAttribute('data-id') === item['gym_id'] && gymSidebar.classList.contains('visible')) {
                 gymSidebar.classList.remove('visible')
+                    selectedGymSidebar = null
             } else {
                 gymSidebar.setAttribute('data-id', item['gym_id'])
                 showGymDetails(item['gym_id'])
@@ -5257,6 +5273,8 @@ function createUpdateWorker() {
 }
 
 function showGymDetails(id) { // eslint-disable-line no-unused-vars
+    selectedGymSidebar = id
+
     var sidebar = document.querySelector('#gym-details')
     var sidebarClose
 
@@ -5413,6 +5431,58 @@ function showGymDetails(id) { // eslint-disable-line no-unused-vars
         }
 
         var pokemonHtml = ''
+        var lobbyStr = ''
+
+        if (result['raid_level'] >= 3 && result.raid_end > Date.now()) {
+
+            var tableBody = ''
+            var form = ''
+            if (pokebotLobbies === false && Store.get(['pokebotLobbies'])) {
+                tableBody = '<td width="100%" style="text-align: center;"><b>' + i8ln('Loading') + '...</b></td>'
+
+                updateRaidLobby(id, true)
+            } else {
+                if (typeof result.count !== 'undefined' && result.count > 0) {
+                    result.lobby.forEach(function (entry) {
+                        var timeString
+                        if (entry.time == null) {
+                            timeString = i8ln('No Time')
+                        } else {
+                            timeString = entry.time
+                        }
+                        tableBody +=
+                            '<tr>' +
+                            '<td width="50%" style="text-align: right;"><b>' + timeString + '</b></td>' +
+                            '<td width="50%" style="text-align: left;">' + entry.count + '</td>' +
+                            '</tr>'
+                    })
+                }
+                form = '<form id="saveToken">' +
+                    '<p>' + i8ln('You need a token in order to sign up for this raid!') + '<br>' + i8ln('Get your token by typing !gettoken in our Discord!') +  '</p>' +
+                    '<input name="token"></label>' +
+                    '<br>' +
+                    '<input type="submit" value="' + i8ln('Save Token') + '">' +
+                    '</form>'
+            }
+
+            lobbyStr =
+                '<br>' +
+                '<div style="color: black; background-color: #f0f0f0; border-style: solid;  border-width: 1px 0px 1px 0px; border-color: lightgrey">' +
+                '<div style="font-size: 1.5em">'+i8ln('Raid-Lobby')+'</div>' +
+                '<div>' +
+                '<table id="raidlobbytimes">' +
+                '<tbody>' +
+                tableBody +
+                '</tbody>' +
+                '</table>' +
+                '</div>' +
+                '<div id="lobbyform" status=0>' +
+                form +
+                '</div>' +
+                '<datalist id="starttimelist"></datalist>' +
+                '</div>' +
+                '<br>'
+        }
         var gymImage = ''
         if (result.url !== null) {
             gymImage = '<img height="140px" style="padding: 5px;" src="' + result.url + '">'
@@ -5441,6 +5511,7 @@ function showGymDetails(id) { // eslint-disable-line no-unused-vars
             '<div>' +
             '<a href=\'javascript:void(0)\' onclick=\'javascript:openMapDirections(' + result.latitude + ',' + result.longitude + ')\' title=\'' + i8ln('View in Maps') + '\'>' + i8ln('Get directions') + '</a> - <a href="./?lat=' + result.latitude + '&lon=' + result.longitude + '&zoom=16">Share link</a>' +
             '</div>' +
+                 lobbyStr +
             '</center>'
 
         if (pokemon.length) {
@@ -5585,8 +5656,17 @@ function showGymDetails(id) { // eslint-disable-line no-unused-vars
             event.preventDefault()
             event.stopPropagation()
             sidebar.classList.remove('visible')
+            selectedGymSidebar = null
         })
         token = result.token
+
+        var saveTokenForm = document.getElementById("saveToken");
+        if (saveTokenForm != null) {
+            saveTokenForm.addEventListener("submit", function (event) {
+                event.preventDefault()
+                saveToken(saveTokenForm, id)
+            })
+        }
     })
 }
 
@@ -5594,6 +5674,10 @@ function toggleGymPokemonDetails(e) { // eslint-disable-line no-unused-vars
     e.lastElementChild.firstElementChild.classList.toggle('fa-angle-double-up')
     e.lastElementChild.firstElementChild.classList.toggle('fa-angle-double-down')
     e.nextElementSibling.classList.toggle('visible')
+}
+
+function selectTime(time) {
+    $('#starttime').val(time);
 }
 
 function fetchCriesJson() {
@@ -6468,6 +6552,12 @@ $(function () {
         buildSwitchChangeListener(mapData, ['gyms'], 'showRaidTimer').bind(this)()
     })
 
+    $('#raid-lobby-switch').change(function () {
+        Store.set('pokebotLobbies', this.checked)
+        lastgyms = false
+        buildSwitchChangeListener(mapData, ['gyms'], 'pokebotLobbies').bind(this)()
+    })
+
     $('#pokestops-switch').change(function () {
         var options = {
             'duration': 500
@@ -6673,6 +6763,256 @@ function checkAndCreateSound(pokemonId = 0) {
             createjs.Sound.play('ding')
         } else {
             createjs.Sound.play(pokemonId)
+        }
+    }
+}
+function saveToken(form, id) {
+    var data = form.elements
+    var token = data["token"].value.trim()
+    if (token != null && token != "") {
+        novabotToken = token
+        Store.set('novabotToken', token)
+        showGymDetails(id)
+    }
+}
+
+function updateRaidLobby(gymId, repeat) {
+    if (gymId === selectedGymSidebar && novabotToken != "" && novabotToken != null) {
+
+        var params = '/lobby?gymid=' + gymId + '&token=' + novabotToken
+        $.ajax({url: novabotApiUrl + params, success: function(result){
+
+            if (gymId === selectedGymSidebar) {
+                var startTimeList = document.querySelector('#starttimelist')
+                var raidLobbyTimes = document.querySelector('#raidlobbytimes')
+
+                var members = result.members
+                var times = {}
+                var nullCount = null
+
+
+                for (var index in members) {
+                    var member = members[index]
+                    var count = member.count
+                    var time = member.time
+
+                    if (time == null) {
+                        if (nullCount == null) {
+                            nullCount = count
+                        } else {
+                            nullCount += count
+                        }
+                    } else {
+                        if (times[time] === undefined) {
+                            times[time] = count
+                        } else {
+                            times[time] += count
+                        }
+                    }
+
+                }
+
+                var keys = Object.keys(times)
+                keys.sort();
+
+                var startTimeListHtml = ''
+                var raidLobbyTimesHtml = ''
+
+                for (var i = 0; i <= keys.length; i++) {
+                    var time
+                    var count
+                    if (i == 0) {
+                        if (nullCount == null) {
+                            continue
+                        }
+                        time = i8ln('No Time')
+                        count = nullCount
+                    } else {
+                        time = keys[i-1]
+                        count = times[time]
+                    }
+
+                    if (i == 0) {
+                        if (result.in_lobby === true) {
+                            raidLobbyTimesHtml += '<tr><td width="50%" style="text-align: right;"><b>' + time + ' *</b></td>'
+                        } else {
+                            raidLobbyTimesHtml += '<tr><td width="50%" style="text-align: right;"><b>' + time + '</b></td>'
+                        }
+                    } else {
+                        if (result.in_lobby === time) {
+                            raidLobbyTimesHtml += '<tr><td width="50%" style="text-align: right;"><b>' + time + ' *</b></td>'
+                        } else {
+                            raidLobbyTimesHtml += '<tr><td width="50%" style="text-align: right;"><b><a href="javascript:selectTime(\'' + time + '\');">' + time + '</a></b></td>'
+                            startTimeListHtml += '<option value="' + time + '">'
+                        }
+                    }
+                    raidLobbyTimesHtml += '<td width="50%" style="text-align: left;">' + count + '</td></tr>'
+                }
+
+                raidLobbyTimes.innerHTML = raidLobbyTimesHtml
+                startTimeList.innerHTML = startTimeListHtml
+
+                var lobbyForm = document.querySelector('#lobbyform')
+                var lobbyFormJQ = $(lobbyForm)
+                var lobbyFormStatus = lobbyFormJQ.attr('status')
+
+                if (result.in_lobby === false && lobbyFormStatus !== "1") {
+                    lobbyForm.innerHTML =
+                        '<label>' + i8ln('Start Time') + ': ' +
+                        '<form id="signupForRaid">' +
+                        '<input list="starttimelist" id="starttime" name="starttime"></label>' +
+                        '<br>' +
+                        '<label>' + i8ln('Group Size') + ': ' +
+                        '<input id="groupsize" type="number" min=1 max=10 value=1></label>' +
+                        '<br>' +
+                        '<input type="submit" value="' + i8ln('Sign up for raid') + '">' +
+                        '</form>'
+
+                    var signupForm = document.querySelector('#signupForRaid')
+                    signupForm.addEventListener("submit", function (event) {
+                        event.preventDefault()
+                        signUpForRaid(signupForm, gymId)
+                    })
+                    lobbyFormJQ.attr('status', "1")
+                } else if (result.in_lobby !== false && lobbyFormStatus !== "2") {
+                    lobbyForm.innerHTML =
+                        '<form id="changeLobbyTime">' +
+                        '<label>' + i8ln('Start Time') + ': ' +
+                        '<br>' +
+                        '<input list="starttimelist" id="starttime" name="starttime"></label>' +
+                        '<br>' +
+                        '<input type="submit" value="' + i8ln('Change Start Time') + '">' +
+                        '</form>' +
+                        '<form id="changeLobbyCount">' +
+                        '<label>' + i8ln('Group Size') + ': ' +
+                        '<br>' +
+                        '<input id="groupsize" type="number" min=1 max=10 value=1></label>' +
+                        '<br>' +
+                        '<input type="submit" value="' + i8ln('Change Group Size') + '">' +
+                        '</form>' +
+                        '<form id="leavelobby">' +
+                        '<input type="submit" value="' + i8ln('Leave Lobby') + '">' +
+                        '</form>'
+
+                    var changeLobbyTimeForm = document.querySelector('#changeLobbyTime')
+                    changeLobbyTimeForm.addEventListener("submit", function (event) {
+                        event.preventDefault()
+                        changeRaidTime(changeLobbyTimeForm, gymId)
+
+                    })
+                    var changeLobbyCountForm = document.querySelector('#changeLobbyCount')
+                    changeLobbyCountForm.addEventListener("submit", function (event) {
+                        event.preventDefault()
+                        changeRaidCount(changeLobbyCountForm, gymId)
+                    })
+                    var leaveLobbyForm = document.querySelector('#leavelobby')
+                    leaveLobbyForm.addEventListener("submit", function (event) {
+                        event.preventDefault()
+                        leaveLobby(gymId)
+                    })
+
+                    lobbyFormJQ.attr('status', "2")
+                }
+                if (repeat === true) {
+                    window.setTimeout(function () {
+                        updateRaidLobby(gymId, true);
+                    }, 10000);
+                }
+            }
+        },error: function ($xhr) {
+            var result = $xhr.responseJSON;
+            apiError(result.error)
+            if (repeat === true) {
+                window.setTimeout(function () {
+                    updateRaidLobby(gymId, true);
+                }, 10000);
+            }
+        }});
+    }
+}
+
+function signUpForRaid(form, gymId) {
+    var data = form.elements
+    var starttime = data["starttime"].value.trim()
+    var groupsize = data["groupsize"].value.trim()
+
+    var params = '/lobby?action=signup&gymid=' + gymId + '&token=' + novabotToken + '&count=' + groupsize
+
+    if (starttime != null && starttime != "") {
+        params += '&time=' + starttime
+    }
+
+    $.ajax({url: novabotApiUrl + params, success: function(result){
+        updateRaidLobby(gymId, false)
+    },error: function ($xhr) {
+        var result = $xhr.responseJSON;
+        apiError(result.error)
+    }});
+}
+
+function changeRaidTime(form, gymId) {
+    var data = form.elements
+    var starttime = data["starttime"].value.trim()
+
+    var params = '/lobby?action=settime&gymid=' + gymId + '&token=' + novabotToken + '&time=' + starttime
+
+    $.ajax({url: novabotApiUrl + params, success: function(result){
+        updateRaidLobby(gymId, false)
+    },error: function ($xhr) {
+        var result = $xhr.responseJSON;
+        apiError(result.error)
+    }});
+}
+
+function leaveLobby(gymId) {
+    var params = '/lobby?action=leave\&gymid=' + gymId + '&token=' + novabotToken
+
+    $.ajax({url: novabotApiUrl + params, success: function(result){
+        updateRaidLobby(gymId, false)
+    },error: function ($xhr) {
+        var result = $xhr.responseJSON;
+        apiError(result.error)
+    }});
+}
+
+function changeRaidCount(form, gymId) {
+    var data = form.elements
+    var groupsize = data["groupsize"].value.trim()
+
+    var params = '/lobby?action=setcount&gymid=' + gymId + '&token=' + novabotToken + '&count=' + groupsize
+
+    $.ajax({url: novabotApiUrl + params, success: function(result){
+        updateRaidLobby(gymId, false)
+    },error: function ($xhr) {
+        var result = $xhr.responseJSON;
+        apiError(result.error)
+    }});
+}
+
+function apiError(error) {
+    toastr['error'](i8ln('Something went wrong') +  ': ' + error, i8ln('Novabot API Error'))
+    toastr.options = {
+        'closeButton': true,
+        'debug': false,
+        'newestOnTop': true,
+        'progressBar': false,
+        'positionClass': 'toast-top-right',
+        'preventDuplicates': true,
+        'onclick': null,
+        'showDuration': '300',
+        'hideDuration': '1000',
+        'timeOut': '25000',
+        'extendedTimeOut': '1000',
+        'showEasing': 'swing',
+        'hideEasing': 'linear',
+        'showMethod': 'fadeIn',
+        'hideMethod': 'fadeOut'
+    }
+    if (error === "invalid_token") {
+        novabotToken = ""
+        Store.set('novabotToken', "")
+        if (selectedGymSidebar != null) {
+            showGymDetails(selectedGymSidebar)
         }
     }
 }

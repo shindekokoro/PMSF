@@ -204,7 +204,7 @@ if ( $blockIframe ) {
         </script>';
         }
     ?>
-    
+
     <script>
         var token = '<?php echo ( ! empty( $_SESSION['token'] ) ) ? $_SESSION['token'] : ""; ?>';
     </script>
@@ -246,7 +246,7 @@ if ( $blockIframe ) {
             <div id="currentWeather"></div>
             <?php
         } ?>
-        
+
         <?php
         if ($noNativeLogin === false || $noDiscordLogin === false) {
             if (isset($_COOKIE["LoginCookie"])) {
@@ -268,7 +268,7 @@ if ( $blockIframe ) {
                     header("Location: ./user");
                     die();
                 }
-                
+
                 if ($info['expire_timestamp'] > time()) {
                     $color = "green";
                 } else {
@@ -1291,7 +1291,7 @@ if ( $blockIframe ) {
             <div><center><p>
             <?php
             $time = date("Y-m-d", $_SESSION['user']->expire_timestamp);
-            
+
             echo $_SESSION['user']->user . "<br>";
             if ($_SESSION['user']->expire_timestamp < time()) {
                 echo "<span style='color: green;'>" . i8ln('Membership expires on') . " {$time}</span>";
@@ -1988,6 +1988,7 @@ if ( $blockIframe ) {
     var nestGeoJSONfile = '<?php echo $noNestPolygon ? '' : $nestGeoJSONfile ?>';
     var noCostumeIcons = <?php echo $noCostumeIcons === true ? 'true' : 'false' ?>;
     var queryInterval = <?php echo $queryInterval ?>;
+    var pokebotApiUrl = '<?php echo $pokebotApiUrl ?>';
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script src="static/dist/js/map.common.min.js"></script>

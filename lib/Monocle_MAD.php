@@ -14,7 +14,7 @@ class Monocle_MAD extends Monocle
         $select = "pokemon_id, expire_timestamp AS disappear_time, encounter_id, lat AS latitude, lon AS longitude, gender, form, weather_boosted_condition, costume";
         global $noHighLevelData;
         if (!$noHighLevelData) {
-            $select .= ", weight, atk_iv AS individual_attack, def_iv AS individual_defense, sta_iv AS individual_stamina, move_1, move_2, cp, level";
+            $select .= ", weight, height, atk_iv AS individual_attack, def_iv AS individual_defense, sta_iv AS individual_stamina, move_1, move_2, cp, level";
         }
 
         $conds[] = "lat > :swLat AND lon > :swLng AND lat < :neLat AND lon < :neLng AND expire_timestamp > :time";
@@ -88,7 +88,7 @@ class Monocle_MAD extends Monocle
 
         global $noHighLevelData;
         if (!$noHighLevelData) {
-            $select .= ", weight, atk_iv AS individual_attack, def_iv AS individual_defense, sta_iv AS individual_stamina, move_1, move_2, cp, level";
+            $select .= ", weight, height, atk_iv AS individual_attack, def_iv AS individual_defense, sta_iv AS individual_stamina, move_1, move_2, cp, level";
         }
 
         $conds[] = "lat > :swLat AND lon > :swLng AND lat < :neLat AND lon < :neLng AND expire_timestamp > :time";
@@ -140,7 +140,83 @@ class Monocle_MAD extends Monocle
         return $this->query_active($select, $conds, $params);
     }
 
-    public function get_stops($qpeids, $qieids, $swLat, $swLng, $neLat, $neLng, $tstamp = 0, $oSwLat = 0, $oSwLng = 0, $oNeLat = 0, $oNeLng = 0, $lures, $quests, $dustamount)
+    public function query_active($select, $conds, $params, $encSql = '')
+    {
+        global $db;
+
+        $query = "SELECT :select
+        FROM sightings
+        WHERE :conditions ORDER BY lat,lon";
+
+        $query = str_replace(":select", $select, $query);
+        $query = str_replace(":conditions", '(' . join(" AND ", $conds) . ')' . $encSql, $query);
+        $pokemons = $db->query($query, $params)->fetchAll(\PDO::FETCH_ASSOC);
+        $data = array();
+        $i = 0;
+        $lastlat = 0;
+        $lastlon=0;
+        $lasti = 0;
+
+        foreach ($pokemons as $pokemon) {
+            $pokemon["latitude"] = floatval($pokemon["latitude"]);
+            $pokemon["longitude"] = floatval($pokemon["longitude"]);
+            $lastlat = floatval($pokemon["latitude"]);
+            $lastlon = floatval($pokemon["longitude"]);
+            if (abs($pokemon["latitude"] - $lastlat) < 0.0001 && abs($pokemon["longitude"] - $lastlon) < 0.0001){
+                $lasti = $lasti + 1;
+            } else {
+                $lasti = 0;
+            }
+            $pokemon["latitude"] = $pokemon["latitude"] + 0.0003*cos(deg2rad($lasti*45));
+            $pokemon["longitude"] = $pokemon["longitude"] + 0.0003*sin(deg2rad($lasti*45));
+            $pokemon["disappear_time"] = $pokemon["disappear_time"] * 1000;
+
+            $pokemon["weight"] = isset($pokemon["weight"]) ? floatval($pokemon["weight"]) : null;
+            $pokemon["height"] = isset($pokemon["height"]) ? floatval($pokemon["height"]) : null;
+
+            $pokemon["individual_attack"] = isset($pokemon["individual_attack"]) ? intval($pokemon["individual_attack"]) : null;
+            $pokemon["individual_defense"] = isset($pokemon["individual_defense"]) ? intval($pokemon["individual_defense"]) : null;
+            $pokemon["individual_stamina"] = isset($pokemon["individual_stamina"]) ? intval($pokemon["individual_stamina"]) : null;
+
+            $pokemon["weather_boosted_condition"] = isset($pokemon["weather_boosted_condition"]) ? intval($pokemon["weather_boosted_condition"]) : 0;
+            $pokemon['expire_timestamp_verified'] = null;
+            $pokemon["pokemon_id"] = intval($pokemon["pokemon_id"]);
+            $pokemon["pokemon_name"] = i8ln($this->data[$pokemon["pokemon_id"]]['name']);
+            $pokemon["pokemon_rarity"] = i8ln($this->data[$pokemon["pokemon_id"]]['rarity']);
+
+            if (isset($pokemon["form"]) && $pokemon["form"] > 0) {
+                $forms = $this->data[$pokemon["pokemon_id"]]["forms"];
+                foreach ($forms as $f => $v) {
+                    if ($pokemon["form"] === $v['protoform']) {
+                        $types = $v['formtypes'];
+                        foreach ($v['formtypes'] as $ft => $v) {
+                            $types[$ft]['type'] = i8ln($v['type']);
+                        }
+                        $pokemon["pokemon_types"] = $types;
+                    } else if ($pokemon["form"] === $v['assetsform']) {
+                        $types = $v['formtypes'];
+                        foreach ($v['formtypes'] as $ft => $v) {
+                            $types[$ft]['type'] = i8ln($v['type']);
+                        }
+                        $pokemon["pokemon_types"] = $types;
+                    }
+                }
+            } else {
+                $types = $this->data[$pokemon["pokemon_id"]]["types"];
+                foreach ($types as $k => $v) {
+                    $types[$k]['type'] = i8ln($v['type']);
+                }
+                $pokemon["pokemon_types"] = $types;
+            }
+            $data[] = $pokemon;
+
+            unset($pokemons[$i]);
+            $i++;
+        }
+        return $data;
+    }
+
+    public function get_stops($qpeids, $qieids, $swLat, $swLng, $neLat, $neLng, $tstamp = 0, $oSwLat = 0, $oSwLng = 0, $oNeLat = 0, $oNeLng = 0, $lures, $rocket, $quests, $dustamount)
     {
         $conds = array();
         $params = array();
@@ -163,6 +239,10 @@ class Monocle_MAD extends Monocle
             $conds[] = "expires > :time";
             $params[':time'] = time();
         }
+        if (!empty($rocket) && $rocket === 'true') {
+            $conds[] = "incident_expiration > :time";
+            $params[':time'] = time();
+        }
 
         if ($tstamp > 0) {
             $conds[] = "updated > :lastUpdated";
@@ -171,7 +251,7 @@ class Monocle_MAD extends Monocle
         return $this->query_stops($conds, $params);
     }
 
-    public function get_stops_quest($qpreids, $qireids, $swLat, $swLng, $neLat, $neLng, $tstamp = 0, $oSwLat = 0, $oSwLng = 0, $oNeLat = 0, $oNeLng = 0, $lures, $quests, $dustamount, $reloaddustamount)
+    public function get_stops_quest($qpreids, $qireids, $swLat, $swLng, $neLat, $neLng, $tstamp = 0, $oSwLat = 0, $oSwLng = 0, $oNeLat = 0, $oNeLng = 0, $lures, $rocket, $quests, $dustamount, $reloaddustamount)
     {
         $conds = array();
         $params = array();
@@ -225,7 +305,7 @@ class Monocle_MAD extends Monocle
 
         $query = "SELECT p.external_id AS pokestop_id,
         p.expires AS lure_expiration,
-        p.deployer AS lure_user,
+        p.incident_expiration,
         p.name AS pokestop_name,
         p.url,
         p.lat AS latitude,
@@ -249,8 +329,8 @@ class Monocle_MAD extends Monocle
         json_extract(json_extract(`quest_reward`,'$[*].pokemon_encounter.pokemon_display.is_shiny'),'$[0]') AS quest_pokemon_shiny,
         tq.quest_item_amount AS quest_reward_amount,
         tq.quest_stardust AS quest_dust_amount
-    FROM pokestops p
-    LEFT JOIN trs_quest tq ON tq.GUID = p.external_id
+        FROM pokestops p
+        LEFT JOIN trs_quest tq ON tq.GUID = p.external_id
         WHERE :conditions";
 
         $query = str_replace(":conditions", join(" AND ", $conds), $query);
@@ -283,6 +363,7 @@ class Monocle_MAD extends Monocle
             $pokestop["quest_reward_amount"] = intval($pokestop["quest_reward_amount"]);
             $pokestop["quest_dust_amount"] = intval($pokestop["quest_dust_amount"]);
             $pokestop["lure_expiration"] = $pokestop["lure_expiration"] * 1000;
+            $pokestop["incident_expiration"] = $pokestop["incident_expiration"] * 1000;
             $pokestop["lure_id"] = 1;
             $pokestop["quest_item_name"] = empty($item_pid) ? null : i8ln($this->items[$item_pid]["name"]);
             $pokestop["quest_pokemon_name"] = empty($mon_pid) ? null : i8ln($this->data[$mon_pid]["name"]);

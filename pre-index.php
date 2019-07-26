@@ -217,6 +217,9 @@ if ( $blockIframe ) {
     <!-- Leaflet -->
     <link rel="stylesheet" href="node_modules/leaflet/dist/leaflet.css" />
     <link rel="stylesheet" href="static/dist/css/app.min.css">
+    <?php if ( file_exists( 'static/css/custom.css' ) ) {
+        echo '<link rel="stylesheet" href="static/css/custom.css">';
+    } ?>
     <link rel="stylesheet" href="node_modules/leaflet.markercluster/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css" />
     <link href='static/css/leaflet.fullscreen.css' rel='stylesheet' />
@@ -268,20 +271,17 @@ if ( $blockIframe ) {
 
                 $_SESSION['user']->expire_timestamp = $info['expire_timestamp'];
                 
-                if ($info['expire_timestamp'] > time()) {
-                    //If the session variable does not exist, presume that user suffers from a bug and access config is not used.
-                    //If you don't like this, help me fix it.
-                    if (!isset($_SESSION['already_refreshed'])) {
-                 
-                        //Number of seconds to refresh the page after.
-                        $refreshAfter = 1;
-                 
-                        //Send a Refresh header.
-                        header('Refresh: ' . $refreshAfter);
-                 
-                        //Set the session variable so that we don't refresh again.
-                        $_SESSION['already_refreshed'] = true; 
-                    }
+                //If the session variable does not exist, presume that user suffers from a bug and access config is not used.
+                //If you don't like this, help me fix it.
+                if (!isset($_SESSION['already_refreshed'])) {
+                    //Number of seconds to refresh the page after.
+                    $refreshAfter = 1;
+
+                    //Send a Refresh header.
+                    header('Refresh: ' . $refreshAfter);
+
+                    //Set the session variable so that we don't refresh again.
+                    $_SESSION['already_refreshed'] = true; 
                 }
 
                 if (!empty($_SESSION['user']->updatePwd) && $_SESSION['user']->updatePwd === 1) {
@@ -352,19 +352,21 @@ if ( $blockIframe ) {
                     </div>
                 </div>';
                 } ?>
-                <?php
-                if ( ! $noNestPolygon && ! $noNests ) {
-                    echo '<div class="form-control switch-container">
-                    <h3>' . i8ln( 'Nest Polygon' ) . '</h3>
-                    <div class="onoffswitch">
-                        <input id="nest-polygon-switch" type="checkbox" name="nest-polygon-switch" class="onoffswitch-checkbox">
-                        <label class="onoffswitch-label" for="nest-polygon-switch">
-                            <span class="switch-label" data-on="On" data-off="Off"></span>
-                            <span class="switch-handle"></span>
-                        </label>
-                    </div>
-                </div>';
-                } ?>
+                <div id="nest-filter-wrapper" style="display:none">
+                    <?php
+                    if ( ! $noNestPolygon && ! $noNests ) {
+                        echo '<div class="form-control switch-container">
+                        <h3>' . i8ln( 'Nest Polygon' ) . '</h3>
+                        <div class="onoffswitch">
+                            <input id="nest-polygon-switch" type="checkbox" name="nest-polygon-switch" class="onoffswitch-checkbox">
+                            <label class="onoffswitch-label" for="nest-polygon-switch">
+                                <span class="switch-label" data-on="On" data-off="Off"></span>
+                                <span class="switch-handle"></span>
+                            </label>
+                        </div>
+                    </div>';
+                    } ?>
+                </div>
                     <div id="pokemon-filter-wrapper" style="display:none">
                         <?php
                         if ( ! $noTinyRat && ! $noTinyRatSetting ) {
@@ -502,7 +504,7 @@ if ( $blockIframe ) {
                         </label>
                     </div>
                 </div>';
-        } ?>
+                } ?>
                     <div id="pokestops-filter-wrapper" style="display:none">
                 <?php
                 if ( ! $noLures ) {
@@ -517,7 +519,21 @@ if ( $blockIframe ) {
                         </label>
                     </div>
                 </div>';
-        } ?>
+                } ?>
+                <?php
+                if ( ! $noTeamRocket ) {
+                    echo '<div class="form-control switch-container" style="float:none;height:35px;margin-bottom:0px;">
+                    <h3>' . i8ln( 'Team Rocket only' ) . '</h3>
+                    <div class="onoffswitch">
+                        <input id="rocket-switch" type="checkbox" name="rocket-switch"
+                               class="onoffswitch-checkbox" checked>
+                        <label class="onoffswitch-label" for="rocket-switch">
+                            <span class="switch-label" data-on="On" data-off="Off"></span>
+                            <span class="switch-handle"></span>
+                        </label>
+                    </div>
+                </div>';
+                } ?>
                 <?php
                 if ( ! $noQuests ) {
                     echo '<div class="form-control switch-container" style="float:none;height:35px;margin-bottom:0px;">
@@ -531,7 +547,7 @@ if ( $blockIframe ) {
                         </label>
                     </div>
                 </div>';
-        ?>
+                ?>
                     <div id="quests-filter-wrapper" style="display:none">
                         <div id="quests-tabs">
                             <ul>
@@ -1455,7 +1471,7 @@ if ( $blockIframe ) {
     <?php if ( ! $noConvertPokestops ) { ?>
         <div class="convert-modal" style="display: none;">
              <div class="button-container">
-                <button type="class" onclick="convertPokestopData(event);" class="convertpokestopid"><i class="fas fa-sync-alt"></i> <?php echo i8ln( 'Convert to gym' ); ?></button>
+                <button type="button" onclick="convertPokestopData(event);" class="convertpokestopid"><i class="fas fa-sync-alt"></i> <?php echo i8ln( 'Convert to gym' ); ?></button>
             </div>
         </div>
     <?php } ?>
@@ -1937,7 +1953,10 @@ if ( $blockIframe ) {
     var enablePokemon = <?php echo $noPokemon ? 'false' : $enablePokemon ?>;
     var enablePokestops = <?php echo $noPokestops ? 'false' : $enablePokestops ?>;
     var enableLured = <?php echo $noLures ? 'false' : $enableLured ?>;
+    var enableRocket = <?php echo $noTeamRocket ? 'false' : $enableTeamRocket ?>;
     var noQuests = <?php echo $noQuests === true ? 'true' : 'false' ?>;
+    var noLures = <?php echo $noLures === true ? 'true' : 'false' ?>;
+    var noTeamRocket = <?php echo $noTeamRocket === true ? 'true' : 'false' ?>;
     var enableQuests = <?php echo $noQuests ? 'false' : $enableQuests ?>;
     var hideQuestsPokemon = <?php echo $noQuestsPokemon ? '[]' : $hideQuestsPokemon ?>;
     var hideQuestsItem = <?php echo $noQuestsItems ? '[]' : $hideQuestsItem ?>;

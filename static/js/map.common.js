@@ -259,6 +259,11 @@ var StoreOptions = {
             default: enableLured,
             type: StoreTypes.Boolean
         },
+    'showRocket':
+        {
+            default: enableRocket,
+            type: StoreTypes.Boolean
+        },
     'showQuests':
         {
             default: enableQuests,
@@ -523,7 +528,7 @@ function setupPokemonMarker(item, map, isBounceDisabled) {
     if (isBounceDisabled === true) {
         animationDisabled = true
     }
-    var marker = L.marker([item['latitude'], item['longitude']], {icon: icon, zIndexOffset: 9999}).addTo(markers)
+    var marker = L.marker([item['latitude'], item['longitude']], {icon: icon, zIndexOffset: 9999, virtual: true}).addTo(markers)
     return marker
 }
 

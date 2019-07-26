@@ -73,7 +73,7 @@ var L
 var map
 var markers
 var markersnotify
-var _oldlayer = 'openstreetmap'
+var _oldlayer = 'spindamap'
 var rawDataIsLoading = false
 var locationMarker
 var rangeMarkers = ['pokemon', 'pokestop', 'gym']
@@ -103,7 +103,7 @@ var lastspawns
 
 var markPortalsAsNew
 
-var selectedStyle = 'openstreetmap'
+var selectedStyle = 'spindamap'
 
 var updateWorker
 var lastUpdateTime
@@ -576,6 +576,8 @@ function initMap() { // eslint-disable-line no-unused-vars
 function toggleFullscreenMap() { // eslint-disable-line no-unused-vars
     map.toggleFullscreen()
 }
+var spindamap = L.tileLayer('https://tiles.spindamap.com/styles/klokantech-basic/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}) // eslint-disable-line no-unused-vars
+
 var openstreetmap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}) // eslint-disable-line no-unused-vars
 
 var darkmatter = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {attribution: '&copy; <a href="https://carto.com/">Carto</a>'}) // eslint-disable-line no-unused-vars
@@ -2290,7 +2292,7 @@ function setupInnMarker(item) {
 }
 
 function setupFortressMarker(item) {
-    var html = '<div><img src="static/forts/hpwu/fortress.png" style="width:33px;height:75px;top:-35px;right:10px;"/><div>'
+    var html = '<div><img src="static/forts/hpwu/fortress.png" style="height:65px;top:-25px;right:10px;"/><div>'
     var fortressMarkerIcon = L.divIcon({
         iconSize: [36, 48],
         iconAnchor: [18, 68],
@@ -2306,7 +2308,7 @@ function setupFortressMarker(item) {
 }
 
 function setupGreenhouseMarker(item) {
-    var html = '<div><img src="static/forts/hpwu/greenhouse.png" style="width:40px;height:40px;top:-35px;right:10px;"/><div>'
+    var html = '<div><img src="static/forts/hpwu/greenhouse.png" style="height:35px;top:-25px;right:10px;"/><div>'
     var greenhouseMarkerIcon = L.divIcon({
         iconSize: [36, 48],
         iconAnchor: [20, 33],

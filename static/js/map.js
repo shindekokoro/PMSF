@@ -31,6 +31,7 @@ var $selectDirectionProvider
 var $switchExEligible
 var $questsExcludePokemon
 var $questsExcludeItem
+var $selectIconStyle
 
 var language = document.documentElement.lang === '' ? 'en' : document.documentElement.lang
 var languageSite = 'en'
@@ -953,7 +954,7 @@ function pokemonLabel(item) {
     if (form !== null && form > 0 && forms.length > form) {
         if (id === 132) {
             contentstring += ' (' + idToPokemon[item['form']].name + ')'
-        } else {
+        } else if (forms[item['form']] !== '') {
             contentstring += ' (' + forms[item['form']] + ')'
         }
     }
@@ -1000,7 +1001,7 @@ function pokemonLabel(item) {
     if (atk != null && def != null && sta != null) {
         contentstring += '<center><div style="position:relative;top:55px;">'
     } else {
-        contentstring += '<center><div style="position:absolute;top:125px;left:40px">'
+        contentstring += '<center><div style="position:relative;">'
     }
     contentstring += '<a href="javascript:excludePokemon(' + id + ')">' + i8ln('Exclude') + '</a>' +
     ' | <a href="javascript:notifyAboutPokemon(' + id + ')">' + i8ln('Notify') + '</a>' +
@@ -1009,15 +1010,17 @@ function pokemonLabel(item) {
     if (atk != null && def != null && sta != null) {
         contentstring += '<div style="position:relative;top:55px;"><center>'
     } else {
-        contentstring += '<div style="position:absolute;top:145px;left:40px;"><center>'
+        contentstring += '<div style="position:relative;"><center>'
     }
     contentstring +=
     '<a href="javascript:void(0)" onclick="javascript:openMapDirections(' + latitude + ', ' + longitude + ')" title="' + i8ln('View in Maps') + '">' +
     '<i class="fas fa-road"></i> ' + coordText + '</a> - ' +
     '<a href="./?lat=' + latitude + '&lon=' + longitude + '&zoom=16">' +
     '<i class="far fa-share-square" aria-hidden="true" style="position:relative;top:3px;left:0px;color:#26c300;margin-bottom:10px;font-size:18px;"></i>' +
-    '</a></center></div><br><br><br>'
-
+    '</a></center></div>'
+    if (atk != null && def != null && sta != null) {
+        contentstring += '<br><br><br>'
+    }
     return contentstring
 }
 
@@ -1054,7 +1057,7 @@ function gymLabel(item) {
             if (form !== null && form > 0 && forms.length > form) {
                 if (item['raid_pokemon_id'] === 132) {
                     raidStr += ' (' + idToPokemon[item['form']].name + ')'
-                } else {
+                } else if (forms[item['form']] !== '') {
                     raidStr += ' (' + forms[item['form']] + ')'
                 }
             }
@@ -5985,6 +5988,31 @@ $(function () {
     })
 
     $selectGymMarkerStyle.val(Store.get('gymMarkerStyle')).trigger('change')
+
+    $selectIconStyle = $('#icon-style')
+
+    $selectIconStyle.select2({
+        placeholder: 'Select Style',
+        minimumResultsForSearch: Infinity
+    })
+    $selectIconStyle.on('change', function (e) {
+        Store.set('icons', this.value)
+        var port = ''
+        if (window.location.port.length > 0) {
+            port = ':' + window.location.port
+        }
+        var path = window.location.protocol + '//' + window.location.hostname + port + window.location.pathname
+        var r = new RegExp('^(?:[a-z]+:)?//', 'i')
+        iconpath = r.test(Store.get('icons')) ? Store.get('icons') : path + Store.get('icons')
+
+        redrawPokemon(mapData.pokemons)
+        redrawPokemon(mapData.lurePokemons)
+        jQuery('label[for="pokestops-switch"]').click()
+        jQuery('label[for="pokestops-switch"]').click()
+        jQuery('label[for="raids-switch"]').click()
+        jQuery('label[for="raids-switch"]').click()
+    })
+    $selectIconStyle.val(Store.get('icons')).trigger('change')
     pokemonSpritesFilter()
     itemSpritesFilter()
 })

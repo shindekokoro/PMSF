@@ -1266,6 +1266,23 @@ if ( $blockIframe ) {
             }
             ?>
             <?php
+            if ( ! $noMultipleRepos && ! $copyrightSafe ) {
+            echo '<div class="form-control switch-container">
+                <h3>Icon Style</h3>';
+                $count = sizeof( $iconRepos );
+                if ( $count > 0 ) {
+                    echo '<div><select name="icon-style" id="icon-style">';
+                    for ( $i = 0; $i <= $count - 1; $i ++ ) {
+                        echo '<option value="' . $iconRepos[$i][1] . '">' . $iconRepos[$i][0] . '</option>';
+                    }
+                    echo '</select></div></div>';
+                } else {
+                    echo '</div>';
+                    echo '<div><p>404 No Icon Packs found</p></div>';
+                }
+            }
+            ?>
+            <?php
             if ( ! $noIconSize ) {
                 echo '<div class="form-control switch-container">
                 <h3>' . i8ln( 'Icon Size' ) . '</h3>

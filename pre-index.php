@@ -927,17 +927,17 @@ if ( $blockIframe ) {
         </div>
 
                 <div class="form-control switch-container" id = "s2-switch-wrapper" style = "display:none">
-                <div class="form-control switch-container">
-                    <h3>' . i8ln( 'Weather Cells' ) . '</h3>
-                    <div class="onoffswitch">
-                        <input id="s2-level10-switch" type="checkbox" name="s2-level10-switch"
-                               class="onoffswitch-checkbox" checked>
-                        <label class="onoffswitch-label" for="s2-level10-switch">
-                            <span class="switch-label" data-on="On" data-off="Off"></span>
-                            <span class="switch-handle"></span>
-                        </label>
-        </div>
-                </div>
+                    <div class="form-control switch-container">
+                        <h3>' . i8ln( 'Weather Cells' ) . '</h3>
+                        <div class="onoffswitch">
+                            <input id="s2-level10-switch" type="checkbox" name="s2-level10-switch"
+                                   class="onoffswitch-checkbox" checked>
+                            <label class="onoffswitch-label" for="s2-level10-switch">
+                                <span class="switch-label" data-on="On" data-off="Off"></span>
+                                <span class="switch-handle"></span>
+                            </label>
+                        </div>
+                    </div>
                     <div class="form-control switch-container">
                         <h3>' . i8ln( 'EX trigger Cells' ) . '</h3>
                         <div class="onoffswitch">
@@ -947,7 +947,7 @@ if ( $blockIframe ) {
                                 <span class="switch-label" data-on="On" data-off="Off"></span>
                                 <span class="switch-handle"></span>
                             </label>
-            </div>
+                        </div>
                     </div>
                     <div class="form-control switch-container">
                         <h3>' . i8ln( 'Gym placement Cells' ) . '</h3>

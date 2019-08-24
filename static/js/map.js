@@ -163,6 +163,7 @@ var weatherMarkers = []
 var weatherColors
 
 var S2
+var weatherLayerGroup = new L.LayerGroup()
 var exLayerGroup = new L.LayerGroup()
 var gymLayerGroup = new L.LayerGroup()
 var stopLayerGroup = new L.LayerGroup()
@@ -757,6 +758,7 @@ function initSidebar() {
     $('#poi-switch').prop('checked', Store.get('showPoi'))
     $('#s2-switch').prop('checked', Store.get('showCells'))
     $('#s2-switch-wrapper').toggle(Store.get('showCells'))
+    $('#s2-level10-switch').prop('checked', Store.get('showWeatherCells'))
     $('#s2-level13-switch').prop('checked', Store.get('showExCells'))
     $('#s2-level14-switch').prop('checked', Store.get('showGymCells'))
     $('#s2-level17-switch').prop('checked', Store.get('showStopCells'))
@@ -5438,6 +5440,14 @@ function updateWeatherOverlay() {
 
 function updateS2Overlay() {
     if ((Store.get('showCells'))) {
+        if (Store.get('showWeatherCells') && (map.getZoom() > 10)) {
+            exLayerGroup.clearLayers()
+            showS2Cells(10, {color: 'orange', weight: 8, dashOffset: '10'})
+        } else if (Store.get('showWeatherCells') && (map.getZoom() <= 10)) {
+            exLayerGroup.clearLayers()
+            toastr['error'](i8ln('Zoom in more to show them.'), i8ln('EX trigger cells are currently hidden'))
+            toastr.options = toastrOptions
+        }
         if (Store.get('showExCells') && (map.getZoom() > 10)) {
             exLayerGroup.clearLayers()
             showS2Cells(13, {color: 'red', weight: 6, dashOffset: '8'})
@@ -6652,6 +6662,9 @@ $(function () {
         var wrapper = $('#s2-switch-wrapper')
         if (this.checked) {
             wrapper.show(options)
+            if (Store.get('showWeatherCells')) {
+                showS2Cells(10, {color: 'orange', weight: 8, dashOffset: '10'})
+            }
             if (Store.get('showExCells')) {
                 showS2Cells(13, {color: 'red', weight: 6, dashOffset: '8'})
             }
@@ -6668,6 +6681,15 @@ $(function () {
             stopLayerGroup.clearLayers()
         }
         return buildSwitchChangeListener(mapData, ['s2cells'], 'showCells').bind(this)()
+    })
+
+    $('#s2-level10-switch').change(function () {
+        Store.set('showExCells', this.checked)
+        if (this.checked) {
+            showS2Cells(10, {color: 'orange', weight: 8, dashOffset: '10'})
+        } else {
+            exLayerGroup.clearLayers()
+        }
     })
 
     $('#s2-level13-switch').change(function () {

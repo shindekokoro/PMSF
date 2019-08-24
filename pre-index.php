@@ -204,7 +204,7 @@ if ( $blockIframe ) {
         </script>';
         }
     ?>
-    
+
     <script>
         var token = '<?php echo ( ! empty( $_SESSION['token'] ) ) ? $_SESSION['token'] : ""; ?>';
     </script>
@@ -248,7 +248,7 @@ if ( $blockIframe ) {
             <div id="currentWeather"></div>
             <?php
         } ?>
-        
+
         <?php
         if ($noNativeLogin === false || $noDiscordLogin === false) {
             if (isset($_COOKIE["LoginCookie"])) {
@@ -270,7 +270,7 @@ if ( $blockIframe ) {
                 }
 
                 $_SESSION['user']->expire_timestamp = $info['expire_timestamp'];
-                
+
                 //If the session variable does not exist, presume that user suffers from a bug and access config is not used.
                 //If you don't like this, help me fix it.
                 if (!isset($_SESSION['already_refreshed'])) {
@@ -281,14 +281,14 @@ if ( $blockIframe ) {
                     header('Refresh: ' . $refreshAfter);
 
                     //Set the session variable so that we don't refresh again.
-                    $_SESSION['already_refreshed'] = true; 
+                    $_SESSION['already_refreshed'] = true;
                 }
 
                 if (!empty($_SESSION['user']->updatePwd) && $_SESSION['user']->updatePwd === 1) {
                     header("Location: ./user");
                     die();
                 }
-                
+
                 if ($noSelly || $info['expire_timestamp'] > time()) {
                     $color = "green";
                 } else {
@@ -594,7 +594,7 @@ if ( $blockIframe ) {
                                                         } else {
                                                             $questTable = 'pokestop';
                                                         }
-        
+
                                                         $pokestops = $db->query(
                                                             "SELECT distinct quest_pokemon_id FROM " . $questTable . " WHERE quest_pokemon_id >= '1' AND DATE(FROM_UNIXTIME(quest_timestamp)) = CURDATE() order by quest_pokemon_id;"
                                                         )->fetchAll(\PDO::FETCH_ASSOC);
@@ -925,7 +925,19 @@ if ( $blockIframe ) {
                         </label>
                     </div>
         </div>
+
                 <div class="form-control switch-container" id = "s2-switch-wrapper" style = "display:none">
+                <div class="form-control switch-container">
+                    <h3>' . i8ln( 'Weather Cells' ) . '</h3>
+                    <div class="onoffswitch">
+                        <input id="s2-level10-switch" type="checkbox" name="s2-level10-switch"
+                               class="onoffswitch-checkbox" checked>
+                        <label class="onoffswitch-label" for="s2-level10-switch">
+                            <span class="switch-label" data-on="On" data-off="Off"></span>
+                            <span class="switch-handle"></span>
+                        </label>
+        </div>
+                </div>
                     <div class="form-control switch-container">
                         <h3>' . i8ln( 'EX trigger Cells' ) . '</h3>
                         <div class="onoffswitch">
@@ -1397,12 +1409,12 @@ if ( $blockIframe ) {
                 <?php
                 if ( ! $noSelly) {
                     $time = date("Y-m-d", $_SESSION['user']->expire_timestamp);
-                
+
                     if ($_SESSION['user']->expire_timestamp > time()) {
                         echo "<span style='color: green;'>" . i8ln('Membership expires on') . " {$time}</span>";
                     } else {
                         echo "<span style='color: red;'>" . i8ln('Membership expired on') . " {$time}</span>";
-                    } 
+                    }
 			    } ?>
             </p></center></div>
             <div><center><p>
@@ -1481,7 +1493,7 @@ if ( $blockIframe ) {
     <?php } ?>
     <?php if ( ! $noRenamePokestops ) { ?>
         <div class="rename-modal" style="display: none;">
-            <input type="text" id="pokestop-name" name="pokestop-name" 
+            <input type="text" id="pokestop-name" name="pokestop-name"
                 placeholder="<?php echo i8ln( 'Enter New Pokéstop Name' ); ?>" data-type="pokestop" class="search-input">
             <div class="button-container">
                 <button type="button" onclick="renamePokestopData(event);" class="renamepokestopid"><i class="fas fa-edit"></i> <?php echo i8ln( 'Rename Pokéstop' ); ?></button>
@@ -1575,16 +1587,16 @@ if ( $blockIframe ) {
             <?php
                 $json   = file_get_contents( 'static/dist/data/questtype.min.json' );
                 $questtypes  = json_decode( $json, true );
-                
+
                 $json    = file_get_contents( 'static/dist/data/rewardtype.min.json' );
                 $rewardtypes   = json_decode( $json, true );
-                
+
                 $json    = file_get_contents( 'static/dist/data/conditiontype.min.json' );
                 $conditiontypes   = json_decode( $json, true );
-                
+
                 $json    = file_get_contents( 'static/dist/data/pokemon.min.json' );
                 $encounters = json_decode( $json, true );
-                
+
                 $json    = file_get_contents( 'static/dist/data/items.min.json' );
                 $items = json_decode( $json, true );
             ?>
@@ -2062,6 +2074,7 @@ if ( $blockIframe ) {
     var noMarkPoi = <?php echo $noMarkPoi === true ? 'true' : 'false' ?>;
     var noPortals = <?php echo $noPortals === true ? 'true' : 'false' ?>;
     var enableS2Cells = <?php echo $noS2Cells ? 'false' : $enableS2Cells ?>;
+    var enableLevel10Cells = <?php echo $noS2Cells ? 'false' : $enableLevel10Cells ?>;
     var enableLevel13Cells = <?php echo $noS2Cells ? 'false' : $enableLevel13Cells ?>;
     var enableLevel14Cells = <?php echo $noS2Cells ? 'false' : $enableLevel14Cells ?>;
     var enableLevel17Cells = <?php echo $noS2Cells ? 'false' : $enableLevel17Cells ?>;

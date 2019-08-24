@@ -5442,7 +5442,7 @@ function updateS2Overlay() {
     if ((Store.get('showCells'))) {
         if (Store.get('showWeatherCells') && (map.getZoom() > 10)) {
             exLayerGroup.clearLayers()
-            showS2Cells(10, {color: 'orange', weight: 6, dashOffset: '8'})
+            showS2Cells(10, {color: 'blue', weight: 6, dashOffset: '8'})
         } else if (Store.get('showWeatherCells') && (map.getZoom() <= 10)) {
             exLayerGroup.clearLayers()
             toastr['error'](i8ln('Zoom in more to show them.'), i8ln('Weather trigger cells are currently hidden'))
@@ -6663,7 +6663,7 @@ $(function () {
         if (this.checked) {
             wrapper.show(options)
             if (Store.get('showWeatherCells')) {
-                showS2Cells(10, {color: 'orange', weight: 6, dashOffset: '8'})
+                showS2Cells(10, {color: 'blue', weight: 6, dashOffset: '8'})
             }
             if (Store.get('showExCells')) {
                 showS2Cells(13, {color: 'red', weight: 6, dashOffset: '8'})
@@ -6686,7 +6686,7 @@ $(function () {
     $('#s2-level10-switch').change(function () {
         Store.set('showWeatherCells', this.checked)
         if (this.checked) {
-            showS2Cells(10, {color: 'orange', weight: 6, dashOffset: '8'})
+            showS2Cells(10, {color: 'blue', weight: 6, dashOffset: '8'})
         } else {
             exLayerGroup.clearLayers()
         }

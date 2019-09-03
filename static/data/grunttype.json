@@ -222,7 +222,7 @@
     "grunt": "Female",
     "second_reward": "false",
     "encounters":{
-      "first": ["060_236","129_257"],
+      "first": ["060_236","129_254"],
       "second":["061_239"],
       "third":["062_242","186_245"]
     }
@@ -232,9 +232,9 @@
     "grunt": "Male",
     "second_reward": "false",
     "encounters":{
-      "first": ["129_257"],
-      "second":["129_257"],
-      "third":["129_257"]
+      "first": ["129_254"],
+      "second":["129_254"],
+      "third":["129_254"]
     }
   },
   "40": {

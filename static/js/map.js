@@ -599,21 +599,13 @@ function toggleFullscreenMap() { // eslint-disable-line no-unused-vars
 var spindamap = L.tileLayer('https://tiles.spindamap.com/styles/klokantech-basic/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}) // eslint-disable-line no-unused-vars
 
 var openstreetmap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}) // eslint-disable-line no-unused-vars
-
 var darkmatter = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png', {attribution: '&copy; <a href="https://carto.com/">Carto</a>'}) // eslint-disable-line no-unused-vars
-
 var styleblackandwhite = L.tileLayer('https://korona.geog.uni-heidelberg.de/tiles/roadsg/x={x}&y={y}&z={z}', {attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}) // eslint-disable-line no-unused-vars
-
 var styletopo = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}) // eslint-disable-line no-unused-vars
-
 var stylesatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'}) // eslint-disable-line no-unused-vars
-
 var stylewikipedia = L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}{r}.png', {attribution: '<a href="https://wikimediafoundation.org/wiki/Maps_Terms_of_Use">Wikimedia</a>'}) // eslint-disable-line no-unused-vars
-
 var mapbox = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/256/{z}/{x}/{y}?access_token=' + mBoxKey, {attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}) // eslint-disable-line no-unused-vars
-
 var mapboxPogo = L.tileLayer('https://api.mapbox.com/styles/v1/skoodat/cjpuer4j702ph2sl3ktkrkkqa/tiles/256/{z}/{x}/{y}@2x?access_token=' + mBoxKey, {attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'}) // eslint-disable-line no-unused-vars
-
 var googlemapssat = L.gridLayer.googleMutant({type: 'satellite'}) // eslint-disable-line no-unused-vars
 var googlemapsroad = L.gridLayer.googleMutant({type: 'roadmap'}) // eslint-disable-line no-unused-vars
 
@@ -682,7 +674,6 @@ function showS2Cells(level, style) {
             stopLayerGroup.addLayer(poly)
         }
     }
-
 
     let processedCells = {}
     let stack = []
@@ -1147,6 +1138,9 @@ function gymLabel(item) {
     }
     if (!noDeleteGyms) {
         raidStr += '<i class="fas fa-trash-alt delete-gym" onclick="deleteGym(event);" data-id="' + item['gym_id'] + '"></i>'
+    }
+    if (!noRenameGyms) {
+        raidStr += '<center><div><i class="fas fa-edit rename-gym" onclick="openRenameGymModal(event);" data-id="' + item['gym_id'] + '">' + i8ln('Rename Gym') + '</i></div></center>'
     }
     if (!noToggleExGyms) {
         raidStr += '<i class="fas fa-trophy toggle-ex-gym" onclick="toggleExGym(event);" data-id="' + item['gym_id'] + '"></i>'
@@ -2604,11 +2598,15 @@ function poiLabel(item) {
     if (item.notes) {
         str += '<div><b>' + i8ln('Notes') + ':</b> ' + item.notes + '</div>'
     }
-    if (item.poiimageurl) {
+    if (item.poiimageurl && item.poisurroundingurl) {
         str += '<center><img id="poi-image"src="' + item.poiimageurl + '" style="float:left;width:45%;margin-right:1%;margin-bottom:0.5em;" onclick="openFullscreenModal(document.getElementById(\'poi-image\').src)"/></center>'
-    }
-    if (item.poisurroundingurl) {
         str += '<center><img id="poi-surrounding" src="' + item.poisurroundingurl + '" style="float:right;width:45%;margin-right:1%;margin-bottom:0.5em;" onclick="openFullscreenModal(document.getElementById(\'poi-surrounding\').src)"/></center>'
+    }
+    if (item.poiimageurl && !item.poisurroundingurl) {
+        str += '<center><img id="poi-image"src="' + item.poiimageurl + '" style="width:45%;margin-right:1%;margin-bottom:0.5em;" onclick="openFullscreenModal(document.getElementById(\'poi-image\').src)"/></center>'
+    }
+    if (item.poisurroundingurl && !item.poiimageurl) {
+        str += '<center><img id="poi-surrounding" src="' + item.poisurroundingurl + '" style="width:45%;margin-right:1%;margin-bottom:0.5em;" onclick="openFullscreenModal(document.getElementById(\'poi-surrounding\').src)"/></center>'
     }
     if (item.poiimageurl || item.poisurroundingurl) {
         str += '<p style="clear:both;">'
@@ -3484,6 +3482,39 @@ function deleteGym(event) { // eslint-disable-line no-unused-vars
                     jQuery('label[for="gyms-switch"]').click()
                     jQuery('label[for="gyms-switch"]').click()
                     jQuery('#gym-details').removeClass('visible')
+                }
+            })
+        }
+    }
+}
+function renameGymData(event) { // eslint-disable-line no-unused-vars
+    var form = $(event.target).parent().parent()
+    var gymId = form.find('.renamegymid').val()
+    var gymName = form.find('[name="gym-name"]').val()
+    if (gymName && gymName !== '') {
+        if (confirm(i8ln('I confirm this is an accurate new name for this gym'))) {
+            return $.ajax({
+                url: 'submit',
+                type: 'POST',
+                timeout: 300000,
+                dataType: 'json',
+                cache: false,
+                data: {
+                    'action': 'renamegym',
+                    'gymId': gymId,
+                    'gymName': gymName
+                },
+                error: function error() {
+                    // Display error toast
+                    toastr['error'](i8ln('Please check connectivity or reduce marker settings.'), i8ln('Error changing gym name'))
+                    toastr.options = toastrOptions
+                },
+                complete: function complete() {
+                    jQuery('label[for="gyms-switch"]').click()
+                    jQuery('label[for="gyms-switch"]').click()
+                    lastgyms = false
+                    updateMap()
+                    $('.ui-dialog-content').dialog('close')
                 }
             })
         }
@@ -4550,11 +4581,26 @@ function openRenamePokestopModal(event) { // eslint-disable-line no-unused-vars
     $('.ui-dialog').remove()
     var val = $(event.target).data('id')
     $('.renamepokestopid').val(val)
-    $('.rename-modal').clone().dialog({
+    $('.renamepokestop-modal').clone().dialog({
         modal: true,
         maxHeight: 600,
         buttons: {},
         title: i8ln('Rename Pokéstop'),
+        classes: {
+            'ui-dialog': 'ui-dialog raid-widget-popup'
+        }
+    })
+}
+
+function openRenameGymModal(event) { // eslint-disable-line no-unused-vars
+    $('.ui-dialog').remove()
+    var val = $(event.target).data('id')
+    $('.renamegymid').val(val)
+    $('.renamegym-modal').clone().dialog({
+        modal: true,
+        maxHeight: 600,
+        buttons: {},
+        title: i8ln('Rename Gym'),
         classes: {
             'ui-dialog': 'ui-dialog raid-widget-popup'
         }

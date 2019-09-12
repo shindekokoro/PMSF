@@ -168,7 +168,7 @@ class RDM_beta extends RDM
         
         foreach ($pokemons as $pokemon) {
             // Jitter pokemon when they have no spawn_id
-            if ( empty($pokemon['spawn_id'])) {
+            if (empty($pokemon['spawn_id'])) {
                 $pokemon["latitude"] = floatval($pokemon["latitude"]);
                 $pokemon["longitude"] = floatval($pokemon["longitude"]);
                 $lastlat = floatval($pokemon["latitude"]);
@@ -206,7 +206,7 @@ class RDM_beta extends RDM
                             $types[$ft]['type'] = $v['type'];
                         }
                         $pokemon["pokemon_types"] = $types;
-                    } else if ($pokemon["form"] === $v['assetsform']) {
+                    } elseif ($pokemon["form"] === $v['assetsform']) {
                         $types = $v['formtypes'];
                         foreach ($v['formtypes'] as $ft => $v) {
                             $types[$ft]['type'] = $v['type'];
@@ -424,7 +424,7 @@ class RDM_beta extends RDM
             $pokestop["quest_item_id"] = intval($pokestop["quest_item_id"]);
             $pokestop["quest_reward_amount"] = intval($pokestop["quest_reward_amount"]);
             $pokestop["quest_dust_amount"] = intval($pokestop["quest_dust_amount"]);
-            $pokestop["url"] = ! empty($pokestop["url"]) ? str_replace("http://", "https://images.weserv.nl/?url=", $pokestop["url"]) : null;
+            $pokestop["url"] = ! empty($pokestop["url"]) ? preg_replace("/^http:/i", "https:", $pokestop["url"]) : null;
             $pokestop["lure_expiration"] = $pokestop["lure_expiration"] * 1000;
             $pokestop["incident_expiration"] = $pokestop["incident_expiration"] * 1000;
             $pokestop["lure_id"] = $pokestop["lure_id"] - 500;

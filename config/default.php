@@ -46,8 +46,9 @@ $startingLng = 5.302366;                                        // Starting long
 /* Zoom and Cluster Settings */
 
 $maxLatLng = 1;                                                     // Max latitude and longitude size (1 = ~110km, 0 to disable)
+$defaultZoom = 16;                                                  // Default zoom level for first time users.
 $maxZoomOut = 0;                                                    // Max zoom out level (11 ~= $maxLatLng = 1, 0 to disable, lower = the further you can zoom out)
-$maxZoomIn = 18;                                                    // Max zoom in level 18 
+$maxZoomIn = 18;                                                    // Max zoom in level 18
 $disableClusteringAtZoom = 15;					                    // Disable clustering above this value. 0 to disable
 $zoomToBoundsOnClick = 15;					                        // Zoomlevel on clusterClick
 $maxClusterRadius = 30;						                        // The maximum radius that a cluster will cover from the central marker (in pixels).
@@ -191,10 +192,8 @@ $excludeMinIV = '[131, 143, 147, 148, 149, 248]';                   // [] for em
 $minIV = '0';                                                       // "0" for empty or a number
 $minLevel = '0';                                                    // "0" for empty or a number
 
-$noBigKarp = false;                                                 // BUGGED: Hides ALL Magikarp && the menu setting. true/false
-$noBigKarpSetting = false;                                          // true/false
-$noTinyRat = false;                                                 // BUGGED: Hides ALL Rattata && the menu setting. true/false
-$noTinyRatSetting = false;                                          // true/false
+$noBigKarp = false;
+$noTinyRat = false;
 
 $noGyms = false;                                                    // true/false
 $enableGyms = 'false';                                              // true/false
@@ -409,7 +408,7 @@ $nestGeoJSONfile = 'custom/nest.json';			    // path to geoJSON file provided by
 //-----------------------------------------------
 // HPWU
 //-----------------------------------------------------
-$noInn = true;               // Enable/Disable the option to see inns 
+$noInn = true;               // Enable/Disable the option to see inns
 $enableInn = 'false';        // Enable/Disable inns by default. A user can edit this.
 $noDeleteInn = true;         // Enable/Disable option do delete a inn
 

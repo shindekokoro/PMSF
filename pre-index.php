@@ -226,18 +226,32 @@ if ($blockIframe) {
 <div class="wrapper">
     <!-- Header -->
     <header id="header">
-        <a href="#nav"><span class="label"><?php echo i8ln('Options') ?></span></a>
+        <a href="#nav" title="<?php echo i8ln('Options') ?>"></a>
 
         <h1><a href="#"><?= $title ?><img src="<?= $raidmapLogo ?>" height="35" width="auto" border="0" style="float: right; margin-left: 5px; margin-top: 10px;"></a></h1>
+
         <?php
-        if ($discordUrl != "") {
-            echo '<a href="' . $discordUrl . '" target="_blank" style="margin-bottom: 5px; vertical-align: middle;padding:0 5px;">
-                 <i class="fab fa-discord fa-2x" style="float:right;color:white;"></i>
-                 </a>';
+        if (! $noStatsToggle) {
+            echo '<a href="#stats" id="statsToggle" class="statsNav" title="' . i8ln('Stats') . '" style="float: right;"></a>';
         }
         if ($paypalUrl != "") {
-            echo '<a href="' . $paypalUrl . '" target="_blank" style="margin-bottom: 5px; vertical-align: middle; padding:0 5px;">
-                 <i class="fab fa-paypal fa-2x" style="float:right;color:white;margin-left:10px;"></i>
+            echo '<a href="' . $paypalUrl . '" target="_blank" style="float:right;padding:0 5px;">
+                 <i class="fab fa-paypal" title="' . i8ln('PayPal') . '" style="position:relative;vertical-align:middle;color:white;margin-left:10px;font-size:20px;"></i>
+                 </a>';
+        }
+        if ($telegramUrl != "") {
+            echo '<a href="' . $telegramUrl . '" target="_blank" style="float:right;padding:0 5px;">
+                 <i class="fab fa-telegram" title="' . i8ln('Telegram') . '" style="position:relative;vertical-align: middle;color:white;margin-left:10px;font-size:20px;"></i>
+                 </a>';
+        }
+        if ($whatsAppUrl != "") {
+            echo '<a href="' . $whatsAppUrl . '" target="_blank" style="float:right;padding:0 5px;">
+                 <i class="fab fa-whatsapp" title="' . i8ln('WhatsApp') . '" style="position:relative;vertical-align:middle;color:white;margin-left:10px;font-size:20px;"></i>
+                 </a>';
+        }
+        if ($discordUrl != "") {
+            echo '<a href="' . $discordUrl . '" target="_blank" style="float:right;padding:0 5px;">
+                 <i class="fab fa-discord" title="' . i8ln('Discord') . '" style="position:relative;vertical-align:middle;color:white;margin-left:10px;font-size:20px;"></i>
                  </a>';
         }
         ?>
@@ -288,24 +302,17 @@ if ($blockIframe) {
                 }
                 
                 if ($noSelly || $info['expire_timestamp'] > time()) {
-                    $color = "green";
+                    echo '<i class="fas fa-user-check" title="' . i8ln('User Logged in') . '" style="color: green;font-size: 20px;position: relative;float: right;padding: 0 5px;top: 17px;"></i>';
                 } else {
-                    $color = "red";
+                    echo '<i class="fas fa-user-times" title="' . i8ln('User Expired') . '" style="color: red;font-size: 20px;position: relative;float: right;padding: 0 5px;top: 17px;"></i>';
                 }
-
-                echo "<span style='color: {$color};'>" . substr($_SESSION['user']->user, 0, 3) . "...</span>";
             } elseif ($forcedDiscordLogin === true) {
                 header("Location: ./discord-login");
             } else {
-                echo "<a href='./user'>" . i8ln('Login') . "</a>";
+                echo "<a href='./user' style='float:right;padding:0 5px;' title='" . i8ln('Login') . "'><i class='fas fa-user' style='color:white;font-size:20px;vertical-align:middle;'></i></a>";
             }
         }
         ?>
-        <?php if (! $noStatsToggle) {
-            ?>
-        <a href="#stats" id="statsToggle" class="statsNav" style="float: right;"><span class="label"><?php echo i8ln('Stats') ?></span></a>
-            <?php
-        } ?>
     </header>
     <!-- NAV -->
     <nav id="nav">
@@ -1446,6 +1453,12 @@ if ($blockIframe) {
                 <center><h1 id="stats-gym-label"></h1></center>
             </div>
             <div id="arenaList" style="color: black;"></div>
+
+            <div class="stats-label-container">
+                <center><h1 id="stats-raid-label"></h1></center>
+            </div>
+            <div id="raidList" style="color: black;"></div>
+
             <div class="stats-label-container">
                 <center><h1 id="stats-pkstop-label"></h1></center>
             </div>
@@ -1608,7 +1621,7 @@ if ($blockIframe) {
                     }
                 }
                 ?>
-        </select>
+            </select>
             <select id="questAmountList" name="questAmountList" class="questAmountList">
                 <option />
                 <option value="1">1</option>
@@ -1621,7 +1634,7 @@ if ($blockIframe) {
                 <option value="8">8</option>
                 <option value="9">9</option>
                 <option value="10">10</option>
-        </select>
+            </select>
             </label>
             <label for="conditionTypeList"><?php echo i8ln('Conditions'); ?>
             <select id="conditionTypeList" name="conditionTypeList" class="conditionTypeList">
@@ -1635,9 +1648,9 @@ if ($blockIframe) {
                     }
                 }
                 ?>
-        </select>
+            </select>
             <select id="pokeCatchList" name="pokeCatchList" class="pokeCatchList" multiple></select>
-        <select id="typeCatchList" name="typeCatchList" class="typeCatchList" multiple>
+            <select id="typeCatchList" name="typeCatchList" class="typeCatchList" multiple>
                 <option value="1"><?php echo i8ln('Normal'); ?></option>
                 <option value="2"><?php echo i8ln('Fighting'); ?></option>
                 <option value="3"><?php echo i8ln('Flying'); ?></option>
@@ -1663,15 +1676,15 @@ if ($blockIframe) {
                 <option value="3">3</option>
                 <option value="4">4</option>
                 <option value="5">5</option>
-        </select>
-        <select id="throwTypeList" name="throwTypeList" class="throwTypeList">
-        <option />
+            </select>
+            <select id="throwTypeList" name="throwTypeList" class="throwTypeList">
+                <option />
                 <option value="10"><?php echo i8ln('Nice'); ?></option>
                 <option value="11"><?php echo i8ln('Great'); ?></option>
                 <option value="12"><?php echo i8ln('Excellent'); ?></option>
             </select>
             <select id="curveThrow" class="curveThrow" class="curveThrow">
-        <option />
+                <option />
                 <option value="0"><?php echo i8ln('Without curve throw'); ?></option>
                 <option value="1"><?php echo i8ln('With curve throw'); ?></option>
             </select>
@@ -1688,7 +1701,7 @@ if ($blockIframe) {
                     }
                 }
                 ?>
-        </select>
+            </select>
             <select id="pokeQuestList" name="pokeQuestList" class="pokeQuestList">
                 <option />
                 <?php
@@ -1700,7 +1713,7 @@ if ($blockIframe) {
                     }
                 }
                 ?>
-        </select>
+            </select>
             <select id="itemQuestList" name="itemQuestList" class="itemQuestList">
                 <option />
                 <?php
@@ -1712,7 +1725,7 @@ if ($blockIframe) {
                     }
                 }
                 ?>
-        </select>
+            </select>
             <select id="itemAmountList" name="itemAmountList" class="itemAmountList">
                 <option />
                 <option value="1">1</option>
@@ -1733,7 +1746,7 @@ if ($blockIframe) {
                 <option value="1000">1000</option>
                 <option value="1500">1500</option>
                 <option value="2000">2000</option>
-        </select>
+            </select>
             </label>
             <div class="button-container">
                 <button type="button" onclick="manualQuestData(event);" class="submitting-quest"><i
@@ -1964,10 +1977,10 @@ if ($blockIframe) {
 </div>
 <!-- Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.9.1/polyfill.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/skel/3.0.1/skel.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.1/js/select2.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.full.min.js"></script>
 <script src="node_modules/datatables/media/js/jquery.dataTables.min.js"></script>
 <script src="node_modules/moment/min/moment-with-locales.min.js"></script>
 <script src="https://code.createjs.com/soundjs-0.6.2.min.js"></script>

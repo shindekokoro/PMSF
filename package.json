@@ -58,19 +58,15 @@
     "grunt-unused": "latest",
     "grunt-usemin": "https://github.com/whitewillem/grunt-usemin/tarball/master",
     "jit-grunt": "^0.10.0",
-    "long": "^3.2.0",
-    "node-sass": "^4.9.2",
-    "phplint": "^1.7.4",
-    "push.js": "^1.0.12",
     "leaflet": "1.5.1",
     "leaflet-geosearch": "2.7.0",
     "leaflet.markercluster": "1.4.1",
     "long": "^3.2.0",
-    "node-sass": "^4.9.2",
-    "phplint": "^1.7.4",
-    "push.js": "^1.0.4"
-    "moment": "2.24.0"
+    "moment": "2.24.0",
     "mysql": "^2.17.1",
-    "ontime": "0.0.6"
+    "node-sass": "^4.12.0",
+    "ontime": "0.0.6",
+    "phplint": "^1.7.4",
+    "push.js": "^1.0.12"
   }
 }

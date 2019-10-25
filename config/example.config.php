@@ -186,9 +186,6 @@ $minLevel = '0';                                                    // "0" for e
 $noBigKarp = false;
 $noTinyRat = false;
 
-$noDittoDetection = true;
-$possibleDitto = [13, 46, 48, 163, 165, 167, 187, 223, 273, 293, 300, 316, 322, 399];
-
 $noGyms = false;
 $enableGyms = 'false';
 $hideGymCoords = false;
@@ -244,6 +241,11 @@ $enableRanges = 'false';
 $noScanPolygon = true;
 $enableScanPolygon = 'false';
 $geoJSONfile = 'custom/scannerarea.json';			                // path to geoJSON file create your own on http://geojson.io/ adjust filename
+
+$noLiveScanLocation = true;                                         // Show scan devices on the map
+$enableLiveScan = 'false';
+$hideDeviceAfterMinutes = 0;                                        // Hide scan devices from map after x amount of minutes not being updated in database. 0 to disable.
+$deviceOfflineAfterSeconds = 300;                                   // Mark scan devices offline (red color) after x amount of seconds not being updated in database.
 /* Location & Search Settings */
 
 $noSearchLocation = false;

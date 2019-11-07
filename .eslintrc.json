@@ -46,6 +46,7 @@
     "locationSet": true,
     "zoom": true,
     "encounterId": true,
+    "defaultZoom": true,
     "minZoom": true,
     "maxZoom": true,
     "maxLatLng": true,
@@ -191,6 +192,9 @@
     "noDeleteInn": true,
     "noDeleteFortress": true,
     "noDeleteGreenhouse": true,
-    "noInvasionEncounterData": true
+    "noInvasionEncounterData": true,
+    "enableLiveScan": true,
+    "deviceOfflineAfterSeconds": true,
+    "noPoi": true
   }
 }

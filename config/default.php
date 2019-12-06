@@ -8,7 +8,9 @@
 // PMSF - DEFAULT CONFIG FILE
 // https://github.com/whitewillem/PMSF
 //======================================================================
-session_start();
+if (!isset($_SESSION)) {
+    session_start();
+}
 require_once(__DIR__ . '/../utils.php');
 
 $libs[] = "Scanner.php";
@@ -83,6 +85,12 @@ $locale = "en";                                                     // Display l
 $gmapsKey = "";
 $mBoxKey = "";
 
+/* Custom Tileserver. Only tested with https://github.com/123FLO321/SwiftTileserverCache */
+
+$noCustomTileServer = true;                                         // Enable/Disable Custom TileServer
+$customTileServerAddress = "";                                      // TileServer URL: http://ipAddress:port/tile/klokantech-basic/{z}/{x}/{y}/1/png
+$forcedTileServer = false;
+
 /* Google Analytics */
 
 $gAnalyticsId = "";                                                 // "" for empty, "UA-XXXXX-Y" add your Google Analytics tracking ID
@@ -120,11 +128,16 @@ $noWhatsappLink = true;
 
 /* IMGBB API */
 $imgurCID = "";
+
+/* Counts */
+$numberOfPokemon = 649;
+$numberOfItem = 1405;
+$numberOfGrunt = 50;
 //-----------------------------------------------------
 // Login  - You need to create the two tables referenced in sql.sql
 //-----------------------------------------------------
 $noSelly = true;
-$forcedDiscordLogin = false;
+$forcedLogin = false;
 $noNativeLogin = true;                                              // true/false - This will enable the built in login system.
 $domainName = '';                                                   // If this is empty, reset-password emails will use the domain name taken from the URL.
 
@@ -213,19 +226,30 @@ $enableRaidTimer = 'false';                                         // true/fals
 $noPokestops = false;                                               // true/false
 $enablePokestops = 'false';                                         // true/false
 $hidePokestopCoords = false;
+$noAllPokestops = false;
+$enableAllPokestops = 'false';
+
 $noLures = false;                                                   // true/false
 $enableLured = 'false';                                             // true/false
+
 $noTeamRocket = false;
 $noTeamRocketTimer = false;                                         // true/false
 $enableTeamRocketTimer = 'false';                                   // true/false
 $enableTeamRocket = 'false';
 $noTeamRocketEncounterData = true;
+$noGrunts = false;
+$noGruntNumbers = false;
+$hideGrunts = '[]';
+$excludeGrunts = [];
+$generateExcludeGrunts = true;
+
 $noQuests = true;                                                  // true/false
 $enableQuests = 'false';                                            // true/false
 $noQuestsItems = false;
 $noQuestsPokemon = false;
 $hideQuestsPokemon = '[]';  // Pokemon ids
 $generateExcludeQuestsPokemon = true;
+$generateExcludeQuestsItem = true;
 $excludeQuestsPokemon = [];  // Pokemon ids
 $hideQuestsItem = '[4, 5, 301, 401, 402, 403, 404, 501, 602, 603, 604, 702, 704, 708, 801, 901, 902, 903, 1001, 1002, 1401, 1402, 1403, 1404, 1405]';    // Item ids "See protos https://github.com/Furtif/POGOProtos/blob/master/src/POGOProtos/Inventory/Item/ItemId.proto"
 $excludeQuestsItem = [4, 5, 301, 401, 402, 403, 404, 501, 602, 603, 604, 702, 704, 707, 801, 901, 902, 903, 1001, 1002, 1401, 1402, 1403, 1404, 1405];
@@ -414,6 +438,7 @@ $noEditCommunity = true;
 //-----------------------------------------------------
 $noNests = true;                                                   // true/false
 $enableNests = 'false';                                             // true/false
+$hideNestCoords = false;
 $noManualNests = true;
 $noDeleteNests = true;
 $deleteNestsOlderThan = 42;					    // days after not updated nests are removed from database by nest cron
@@ -424,20 +449,7 @@ $excludeNestMons = [2,3,5,6,8,9,11,12,14,15,17,18,20,22,24,26,28,29,30,31,32,33,
 $noNestPolygon = true;
 $enableNestPolygon = 'false';
 $nestGeoJSONfile = 'custom/nest.json';			    // path to geoJSON file provided by https://github.com/M4d40/PMSFnestScript
-//-----------------------------------------------
-// HPWU
-//-----------------------------------------------------
-$noInn = true;               // Enable/Disable the option to see inns
-$enableInn = 'false';        // Enable/Disable inns by default. A user can edit this.
-$noDeleteInn = true;         // Enable/Disable option do delete a inn
 
-$noFortress = true;          // Enable/Disable the option to see fortresses
-$enableFortress = 'false';   // Enable/Disable fortresses by default. A user can edit this
-$noDeleteFortress = true;    // Enable/Disable option do delete a fortress
-
-$noGreenhouse = true;        // Enable/Disable the option to see greenhouses
-$enableGreenhouse = 'false'; // Enable/Disable greenhouses by default. A user can edit this
-$noDeleteGreenhouse = true;  // Enable/Disable option do delete a greenhouse
 //-----------------------------------------------------
 // Areas
 //-----------------------------------------------------

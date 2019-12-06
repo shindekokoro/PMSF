@@ -124,6 +124,11 @@ var StoreOptions = {
             default: hideQuestsItem,
             type: StoreTypes.JSON
         },
+    'remember_exclude_grunts':
+        {
+            default: hideGrunts,
+            type: StoreTypes.JSON
+        },
     'showRaids':
         {
             default: enableRaids,
@@ -162,21 +167,6 @@ var StoreOptions = {
     'showPortals':
         {
             default: enablePortals,
-            type: StoreTypes.Boolean
-        },
-    'showInns':
-        {
-            default: enableInns,
-            type: StoreTypes.Boolean
-        },
-    'showFortresses':
-        {
-            default: enableFortresses,
-            type: StoreTypes.Boolean
-        },
-    'showGreenhouses':
-        {
-            default: enableGreenhouses,
             type: StoreTypes.Boolean
         },
     'showPoi':
@@ -252,6 +242,11 @@ var StoreOptions = {
     'showPokestops':
         {
             default: enablePokestops,
+            type: StoreTypes.Boolean
+        },
+    'showAllPokestops':
+        {
+            default: enableAllPokestops,
             type: StoreTypes.Boolean
         },
     'showLures':
@@ -462,10 +457,7 @@ var mapData = {
     nests: {},
     communities: {},
     portals: {},
-    pois: {},
-    inns: {},
-    fortresses: {},
-    greenhouses: {}
+    pois: {}
 }
 
 function getPokemonSprite(index, sprite, displayHeight, weather = 0, encounterForm = 0, pokemonCostume = 0, attack = 0, defense = 0, stamina = 0) {

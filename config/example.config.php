@@ -66,13 +66,19 @@ $mBoxKey = "";
 /* How to use multiple Map Box Keys: */
 
 //$dayOfTheWeek = date('l');
-//If ($dayOfTheWeek === 'Monday' || $dayOfTheWeek === 'Tuesday' || $dayOfTheWeek === 'Wednesday') {
+//if ($dayOfTheWeek === 'Monday' || $dayOfTheWeek === 'Tuesday' || $dayOfTheWeek === 'Wednesday') {
 //    $mBoxKey = "";
 //} else if ($dayOfTheWeek === 'Thursday' || $dayOfTheWeek === 'Friday') {
 //    $mBoxKey = "";
 //} else if ($dayOfTheWeek === 'Saturday' || $dayOfTheWeek === 'Sunday') {
 //    $mBoxKey = "";
 //}
+
+/* Custom Tileserver. Only tested with https://github.com/123FLO321/SwiftTileserverCache */
+
+$noCustomTileServer = true;                                         // Enable/Disable Custom TileServer
+$customTileServerAddress = "";                                      // TileServer URL: http://ipAddress:port/tile/klokantech-basic/{z}/{x}/{y}/1/png
+$forcedTileServer = false;
 
 /* Google Analytics */
 
@@ -111,11 +117,16 @@ $faviconPath = '';                                                  // Upload fa
 
 /* IMGBB API */
 $imgurCID = "";
+
+/* Counts */
+$numberOfPokemon = 649;
+$numberOfItem = 1405;
+$numberOfGrunt = 50;
 //-----------------------------------------------------
 // Login
 //-----------------------------------------------------
+$forcedLogin = false;                                               // Force users to login before they can see map
 /* Discord Auth */
-$forcedDiscordLogin = false;                                        // Force users to login with discord before they can see map
 $noDiscordLogin = true;                                             // This will enable login through discord.
                                                                     // 1. Create a discord bot here -> https://discordapp.com/developers/applications/me
                                                                     // 2. Install composer with "apt-get install composer".
@@ -204,6 +215,9 @@ $noPokestops = false;
 $enablePokestops = 'false';
 $hidePokestopCoords = false;
 
+$noAllPokestops = false;
+$enableAllPokestops = 'false';
+
 $noLures = false;
 $enableLured = 'false';
 
@@ -212,6 +226,11 @@ $enableTeamRocket = 'false';
 $noTeamRocketTimer = false;
 $enableTeamRocketTimer = 'false';
 $noTeamRocketEncounterData = true; // Show/Hide possible rewards. Requires grunttype.json to be up to date.
+$noGrunts = false;
+$noGruntNumbers = false;
+$hideGrunts = '[]';
+$excludeGrunts = [];
+$generateExcludeGrunts = true;
 
 $noQuests = false;
 $enableQuests = 'false';
@@ -219,6 +238,7 @@ $noQuestsItems = false;
 $noQuestsPokemon = false;
 $hideQuestsPokemon = '[]';  					                    // Pokemon ids will default be hidden in the menu every user is able to change this personaly
 $generateExcludeQuestsPokemon = true;                               // Generate $excludeQuestsPokemon based on active quests in database
+$generateExcludeQuestsItem = true;
 $excludeQuestsPokemon = [];					                        // All Pokémon in this array will not be shown in the filter.
 $hideQuestsItem = '[4, 5, 301, 401, 402, 403, 404, 501, 602, 603, 604, 702, 704, 707, 801, 901, 902, 903, 1001, 1002, 1401, 1402, 1402, 1403, 1404, 1405]';    // Item ids "See protos https://github.com/Furtif/POGOProtos/blob/master/src/POGOProtos/Inventory/Item/ItemId.proto"
 $excludeQuestsItem = [4, 5, 301, 401, 402, 403, 404, 501, 602, 603, 604, 702, 704, 707, 801, 901, 902, 903, 1001, 1002, 1401, 1402, 1402, 1403, 1404, 1405];   // All excluded item wil not be shown in the filter.
@@ -428,6 +448,7 @@ $noEditCommunity = true;
 //-----------------------------------------------------
 $noNests = true;
 $enableNests = 'false';
+$hideNestCoords = false;
 $noManualNests = true;
 $noDeleteNests = true;
 $deleteNestsOlderThan = 42;					                       // days after not updated nests are removed from database by nest cron
@@ -438,20 +459,7 @@ $excludeNestMons = [2,3,5,6,8,9,11,12,14,15,17,18,20,22,24,26,28,29,30,31,32,33,
 $noNestPolygon = true;
 $enableNestPolygon = 'false';
 $nestGeoJSONfile = 'custom/nest.json';			    // path to geoJSON file provided by https://github.com/M4d40/PMSFnestScript
-//-----------------------------------------------
-// HPWU
-//-----------------------------------------------------
-$noInn = true;               // Enable/Disable the option to see inns
-$enableInn = 'false';        // Enable/Disable inns by default. A user can edit this.
-$noDeleteInn = true;         // Enable/Disable option do delete a inn
 
-$noFortress = true;          // Enable/Disable the option to see fortresses
-$enableFortress = 'false';   // Enable/Disable fortresses by default. A user can edit this
-$noDeleteFortress = true;    // Enable/Disable option do delete a fortress
-
-$noGreenhouse = true;        // Enable/Disable the option to see greenhouses
-$enableGreenhouse = 'false'; // Enable/Disable greenhouses by default. A user can edit this
-$noDeleteGreenhouse = true;  // Enable/Disable option do delete a greenhouse
 //-----------------------------------------------------
 // Areas
 //-----------------------------------------------------

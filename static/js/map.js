@@ -2690,7 +2690,6 @@ function setupPortalMarker(item) {
     return marker
 }
 
-<<<<<<< HEAD
 function setupInnMarker(item) {
     var html = ''
     if (item['type'] === '0' || item['type'] === '5') {
@@ -2744,8 +2743,6 @@ function setupGreenhouseMarker(item) {
     return marker
 }
 
-=======
->>>>>>> 068a6714551a167b69a49fa0464e4c35e0528e20
 function setupPoiMarker(item) {
     var dot = ''
     if (item.status === '1') {

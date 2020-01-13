@@ -1141,7 +1141,7 @@ form#search-places {
   margin-bottom: 0px;
 }
 
-  .settings {
+.settings {
     text-transform: uppercase;
     font-family: 'Lato', sans-serif;
     font-size: 11px;
@@ -1155,4 +1155,19 @@ form#search-places {
     background: linear-gradient(to right, #a2d696 1%, #21cca8 99%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a2d696', endColorstr='#21cca8', GradientType=1);
     border-radius: 60px;
+} 
+
+a.notify-pokemon-button {
+    width: 50%;
+    float: left;
+    background: #3b3b3b;
+    text-align: center;
+    padding: 10px;
+    color: white;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-right:1px solid #FFF;
+    &:last-child{
+      border-right:0;
+    }
 }

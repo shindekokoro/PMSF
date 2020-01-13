@@ -760,7 +760,6 @@
     #raid-tabs{
       padding:0;
       border:0;
-      height:0px;
       &:after{
         display: table;
         content: "";
@@ -1170,4 +1169,12 @@ a.notify-pokemon-button {
     &:last-child{
       border-right:0;
     }
+}
+
+h3.notify-pokemon-tab {
+    color: #f1e7e7 !important;
+    background: #3b3b3b;
+    padding: 10px;
+    top: 14px;
+    position: relative;
 }

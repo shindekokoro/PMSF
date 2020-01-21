@@ -660,15 +660,6 @@ class RocketMap_MAD extends RocketMap
         return $data;
     }
 
-    public function get_scanlocation($swLat, $swLng, $neLat, $neLng, $tstamp = 0, $oSwLat = 0, $oSwLng = 0, $oNeLat = 0, $oNeLng = 0)
-    {
-        $conds = array();
-        $params = array();
-        $conds[] = "origin is not :null";
-        $params[':null'] = null;
-        return $this->query_scanlocation($conds, $params);
-    }
-
     public function generated_exclude_list($type)
     {
         global $db;
@@ -699,23 +690,51 @@ class RocketMap_MAD extends RocketMap
         }
         return $data;
     }
+
+    public function get_scanlocation($swLat, $swLng, $neLat, $neLng, $tstamp = 0, $oSwLat = 0, $oSwLng = 0, $oNeLat = 0, $oNeLng = 0)
+    {
+        $conds = array();
+        $params = array();
+        $conds[] = "ST_X(currentPos_raw) > :swLat AND ST_Y(currentPos_raw) > :swLng AND ST_X(currentPos_raw) < :neLat AND ST_Y(currentPos_raw) < :neLng";
+        $params[':swLat'] = $swLat;
+        $params[':swLng'] = $swLng;
+        $params[':neLat'] = $neLat;
+        $params[':neLng'] = $neLng;
+        if ($oSwLat != 0) {
+            $conds[] = "NOT (ST_X(currentPos_raw) > :oswLat AND ST_Y(currentPos_raw) > :oswLng AND ST_X(currentPos_raw) < :oneLat AND ST_Y(currentPos_raw) < :oneLng)";
+            $params[':oswLat'] = $oSwLat;
+            $params[':oswLng'] = $oSwLng;
+            $params[':oneLat'] = $oNeLat;
+            $params[':oneLng'] = $oNeLng;
+        }
+        global $noBoundaries, $boundaries;
+        if (!$noBoundaries) {
+            $conds[] = "(ST_WITHIN(currentPos_raw),ST_GEOMFROMTEXT('POLYGON(( " . $boundaries . " ))'))";
+        }
+        global $hideDeviceAfterMinutes;
+        if ($hideDeviceAfterMinutes > 0) {
+            $conds[] = "lastProtoDateTime > UNIX_TIMESTAMP( NOW() - INTERVAL " . $hideDeviceAfterMinutes . " MINUTE)";
+        }
+        return $this->query_scanlocation($conds, $params);
+    }
+
     private function query_scanlocation($conds, $params)
     {
         global $db;
-        $query = "SELECT currentPos AS latLon,
-        Unix_timestamp(lastProtoDateTime) AS last_seen,
-        origin AS uuid,
-        routemanager AS instance_name
-        FROM trs_status
+        $query = "SELECT ST_X(currentPos_raw) AS latitude,
+        ST_Y(currentPos_raw) AS longitude,
+        lastProtoDateTime AS last_seen,
+        name AS uuid,
+        rmname AS instance_name
+        FROM v_trs_status
         WHERE :conditions";
         $query = str_replace(":conditions", join(" AND ", $conds), $query);
         $scanlocations = $db->query($query, $params)->fetchAll(\PDO::FETCH_ASSOC);
         $data = array();
         $i = 0;
         foreach ($scanlocations as $scanlocation) {
-            $parts = explode(", ", $scanlocation["latLon"]);
-            $scanlocation["latitude"] = floatval($parts['0']);
-            $scanlocation["longitude"] = floatval($parts['1']);
+            $scanlocation["latitude"] = floatval($scanlocation["latitude"]);
+            $scanlocation["longitude"] = floatval($scanlocation["longitude"]);
             $data[] = $scanlocation;
             unset($scanlocations[$i]);
             $i++;

@@ -276,7 +276,7 @@ var StoreOptions = {
         },
     'showDustAmount':
         {
-            default: 500,
+            default: defaultDustAmount,
             type: StoreTypes.Number
         },
     'showWeather':
@@ -433,6 +433,11 @@ var StoreOptions = {
         {
             default: 'default',
             type: StoreTypes.String
+        },
+    'darkMode':
+        {
+            default: window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches,
+            type: StoreTypes.Boolean
         }
 }
 

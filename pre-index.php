@@ -98,7 +98,7 @@ if (strtolower($map) === "rdm") {
     <?php
     function pokemonFilterImages($noPokemonNumbers, $onClick = '', $pokemonToExclude = array(), $num = 0)
     {
-        global $mons, $copyrightSafe, $iconRepository;
+        global $mons, $copyrightSafe, $iconRepository, $numberOfPokemon;
         if (empty($mons)) {
             $json = file_get_contents('static/dist/data/pokemon.min.json');
             $mons = json_decode($json, true);
@@ -114,7 +114,7 @@ if (strtolower($map) === "rdm") {
             }
 
             if (! in_array($k, $pokemonToExclude)) {
-                if ($k > 649) {
+                if ($k > $numberOfPokemon) {
                     break;
                 }
                 if ($k <= 9) {
@@ -1268,9 +1268,9 @@ if (!$noLoadingScreen) {
             if (! $noNotifyIv) {
                 echo '<div class="form-control">
                 <label for="notify-perfection">
-                    <h3>' . i8ln('Notify of Perfection') . '</h3>
+                    <h3>' . i8ln('Notify of IV') . '</h3>
                     <input id="notify-perfection" type="text" name="notify-perfection"
-                           placeholder="' . i8ln('Minimum perfection') . ' %" style="float: right;width: 75px;text-align:center"/>
+                           placeholder="' . i8ln('Min IV') . '%" style="float: right;width: 75px;text-align:center"/>
                 </label>
             </div>';
             }
@@ -1378,6 +1378,19 @@ if (!$noLoadingScreen) {
             }
             ?>
             <?php
+            if (! $noDarkMode) {
+                echo '<div class="form-control switch-container">
+                <h3> ' . i8ln('Dark Mode') . ' </h3>
+                <div class="onoffswitch">
+                    <input id="dark-mode-switch" type="checkbox" name="dark-mode-switch" class="onoffswitch-checkbox"/>
+                    <label class="onoffswitch-label" for="dark-mode-switch">
+                        <span class="switch-label" data-on="On" data-off="Off"></span>
+                        <span class="switch-handle"></span>
+                    </label>
+                </div>
+            </div>';
+            } ?>
+            <?php
             if (! $noMapStyle && !$forcedTileServer) {
                 echo '<div class="form-control switch-container">
                 <h3>' . i8ln('Map Style') . '</h3>
@@ -1402,7 +1415,7 @@ if (!$noLoadingScreen) {
             <?php
             if (! $noMultipleRepos && ! $copyrightSafe) {
                 echo '<div class="form-control switch-container">
-                <h3>Icon Style</h3>';
+                <h3>' . i8ln('Icon Style') . '</h3>';
                 $count = sizeof($iconRepos);
                 if ($count > 0) {
                     echo '<div><select name="icon-style" id="icon-style">';
@@ -1484,7 +1497,7 @@ if (!$noLoadingScreen) {
         <div>
             <center>
                 <button class="settings"
-                        onclick="confirm('Are you sure you want to reset settings to default values?') ? (localStorage.clear(), window.location.reload()) : false">
+                        onclick="confirm('<?php echo i8ln('Are you sure you want to reset settings to default values?') ?>') ? (localStorage.clear(), window.location.reload()) : false">
                     <i class="fas fa-sync-alt" aria-hidden="true"></i> <?php echo i8ln('Reset Settings') ?>
                 </button>
             </center>
@@ -1509,30 +1522,43 @@ if (!$noLoadingScreen) {
         <?php
         if (($noNativeLogin === false || $noDiscordLogin === false) && !empty($_SESSION['user']->id)) {
             ?>
-            <div>
-                <center>
-                    <button class="settings"
-                            onclick="document.location.href='logout.php'">
-                        <i class="fas fa-sign-out-alt" aria-hidden="true"></i> <?php echo i8ln('Logout'); ?>
-                    </button>
-                </center>
-            </div>
-            <div><center><p>
-                <?php
-                if ($manualAccessLevel && $noDiscordLogin) {
-                    $time = date("Y-m-d", $_SESSION['user']->expire_timestamp);
-                    if ($_SESSION['user']->expire_timestamp > time()) {
-                        echo "<span style='color: green;'>" . i8ln('Membership expires on') . " {$time}</span>";
-                    } else {
-                        echo "<span style='color: red;'>" . i8ln('Membership expired on') . " {$time}</span>";
-                    }
-                } ?>
-            </p></center></div>
-            <div><center><p>
+            <div><center>
+                <button class="settings" onclick="document.location.href='logout.php'">
+                    <i class="fas fa-sign-out-alt" aria-hidden="true"></i> <?php echo i8ln('Logout'); ?>
+                </button>
+            </center></div>
             <?php
-            echo i8ln('Logged in as') . ': ' . $_SESSION['user']->user . "<br>"; ?>
-            </p></center></div>
+        } ?>
         <?php
+        if (!$noLocaleSelection) {
+            ?>
+            <div class="form-control switch-container" style="width:40%;left:32%;top:10px;position:relative;">
+                <select name="language-switch" onchange="location = this.value;">
+                    <option selected><?php echo i8ln('select language'); ?></option>
+                    <option value="?lang=en"><?php echo i8ln('English'); ?></option>
+                    <option value="?lang=de"><?php echo i8ln('German'); ?></option>
+                    <option value="?lang=fr"><?php echo i8ln('French'); ?></option>
+                    <option value="?lang=it"><?php echo i8ln('Italian'); ?></option>
+                    <option value="?lang=pl"><?php echo i8ln('Polish'); ?></option>
+                    <option value="?lang=sp"><?php echo i8ln('Spanish'); ?></option>
+                </select>
+            </div>
+            <br><br>
+            <?php
+        }?>
+        <?php
+        if (($noNativeLogin === false || $noDiscordLogin === false) && !empty($_SESSION['user']->id)) {
+            if ($manualAccessLevel && $noDiscordLogin) {
+                $time = date("Y-m-d", $_SESSION['user']->expire_timestamp);
+                echo '<div><center><p>';
+                if ($_SESSION['user']->expire_timestamp > time()) {
+                    echo "<span style='color: green;'>" . i8ln('Membership expires on') . " {$time}</span>";
+                } else {
+                    echo "<span style='color: red;'>" . i8ln('Membership expired on') . " {$time}</span>";
+                }
+                echo '</p></center></div>';
+            }
+            echo '<div><center><p>' . i8ln('Logged in as') . ': ' . $_SESSION['user']->user . '</p></center></div><br>';
         }
         ?>
     </nav>
@@ -2268,6 +2294,8 @@ if (!$noLoadingScreen) {
     var noRaids = <?php echo $noRaids === true ? 'true' : 'false' ?>;
     var letItSnow = <?php echo $letItSnow === true ? 'true' : 'false' ?>;
     var makeItBang = <?php echo $makeItBang === true ? 'true' : 'false' ?>;
+    var defaultDustAmount = <?php echo $defaultDustAmount; ?>;
+    var noDarkMode = <?php echo $noDarkMode === true ? 'true' : 'false' ?>;
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <script src="static/dist/js/map.common.min.js"></script>

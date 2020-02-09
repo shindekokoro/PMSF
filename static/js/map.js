@@ -635,9 +635,11 @@ function toggleFullscreenMap() { // eslint-disable-line no-unused-vars
     map.toggleFullscreen()
 }
 
-var spindamap = L.tileLayer('https://tiles.spindamap.com/styles/klokantech-basic/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-}) // eslint-disable-line no-unused-vars
+var spindamap = L.tileLayer('https://tiles.spindamap.com/styles/klokantech-basic/{z}/{x}/{y}.png', { // eslint-disable-line no-unused-vars
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    maxZoom: maxZoom,
+    maxNativeZoom: 18
+})
 
 var openstreetmap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { // eslint-disable-line no-unused-vars
     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',

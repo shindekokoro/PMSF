@@ -17,6 +17,10 @@
             border-right: none;
             border-top: none;
         }
+        .settings {
+            color: $text-color-dark !important;
+            background-color: #3b3b3b !important;
+        }
         .ui-state-active {
             background-color: #3b3b3b !important;
             color: $text-color-dark;
@@ -111,7 +115,7 @@
         p {
             color: $text-color-dark;
         }
-        .settings {
+        button.settings {
             color: $text-color-dark !important;
             background-color: #3b3b3b !important;
         }

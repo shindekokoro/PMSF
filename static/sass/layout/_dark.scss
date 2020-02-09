@@ -1,4 +1,7 @@
 .dark {
+  #header {
+    background: $background-color-dark !important;
+  }
     #nav {
         background: $background-color-dark !important;
         .ui-state-default {

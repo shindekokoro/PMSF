@@ -8,6 +8,10 @@
   .submit-on-off-button{
     background: #5a5a5a !important;
   }
+  .settings {
+      color: $text-color-dark !important;
+      background-color: #3b3b3b !important;
+  }
     #nav {
         background: $background-color-dark !important;
         .ui-state-default {
@@ -16,10 +20,6 @@
             border-left: none;
             border-right: none;
             border-top: none;
-        }
-        .settings {
-            color: $text-color-dark !important;
-            background-color: #3b3b3b !important;
         }
         .ui-state-active {
             background-color: #3b3b3b !important;
